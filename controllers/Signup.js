@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs")
-const Signup = require("../models/Signup")
+const Signup = require("../models/user")
 const OTP = require("../models/OTP")
 const otpGenerator = require("otp-generator")
 const mailSender = require("../utils/mailSender")
