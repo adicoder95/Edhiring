@@ -21,6 +21,20 @@ mongoose.connect('mongodb://localhost:27017/userSchema', {
     console.error('MongoDB connection error:', err);
 });
 
+app.post('/signup', async (req, res) => {
+    const { FirstName, LastName, email, password } = req.body;
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ FirstName, LastName, email, password: hashedPassword });
+        await user.save();
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
