@@ -3,8 +3,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
-
+const signupRoutes = require('./controllers/signup');
+const loginRoutes = require('./controllers/login');
+dotenv.config();
 const User = require('./models/user');
 
 
