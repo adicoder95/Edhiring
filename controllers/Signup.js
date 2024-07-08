@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs")
-const Signup = require("../models/user")
+const User = require("../models/User")
 const OTP = require("../models/OTP")
 const otpGenerator = require("otp-generator")
 const mailSender = require("../utils/mailSender")
@@ -35,7 +35,7 @@ exports.signup = async (req, res) => {
       }
 
       // Check if user already exists
-      const existingUser = await Signup.findOne({ email })
+      const existingUser = await user.findOne({ email })
       if (existingUser) {
         return res.status(400).json({
           success: false,
@@ -63,7 +63,7 @@ exports.signup = async (req, res) => {
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10)
   
-      const user = await Signup.create({
+      const user = await user.create({
         firstName,
         lastName,
         email,
@@ -92,7 +92,7 @@ exports.signup = async (req, res) => {
 exports.sendotp = async (req, res) => {
     try {
       const { email } = req.body
-      const checkUserPresent = await Signup.findOne({ email })
+      const checkUserPresent = await User.findOne({ email })
       // to be used in case of signup
       // If user found with provided email
       if (checkUserPresent) {
