@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 
 const userRoutes = require("./routes/User");
-// const profileRoutes = require("./routes/Profile");
+const profileRoutes = require("./routes/profile");
 
 const database = require("./config/database");
 const cookieParser = require("cookie-parser");
@@ -12,7 +12,7 @@ const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
 
 dotenv.config();
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 3000;
 
 //database connect
 database.connect();
@@ -38,6 +38,8 @@ app.use(
 
 //routes
 app.use("/api/v1/auth", userRoutes);
+// app.use("/api/auth", authRoutes);
+app.use("/api/profile", profileRoutes);
 // app.use("/api/v1/profile", profileRoutes);
 
 //def route
