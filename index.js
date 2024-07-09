@@ -3,6 +3,7 @@ const app = express();
 
 const userRoutes = require("./routes/User");
 const profileRoutes = require("./routes/profile");
+const jobRoutes = require("./routes/Job");
 
 const database = require("./config/database");
 const cookieParser = require("cookie-parser");
@@ -41,6 +42,8 @@ app.use("/api/v1/auth", userRoutes);
 // app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 // app.use("/api/v1/profile", profileRoutes);
+app.use("/api/job", profileRoutes);
+// app.use("/api/v1/job", jobRoutes);
 
 //def route
 app.get("/", (req, res) => {
