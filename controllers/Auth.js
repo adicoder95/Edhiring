@@ -65,15 +65,16 @@ exports.signup = async (req, res) => {
 
     // Create the Additional Profile For User
     const profileDetails = await Profile.create({
-      gender: null,
-      dateOfBirth: null,
-      about: null,
+      gender: 'Not specified',
+      dateOfBirth: new Date('2000-01-01'),
+      about: 'No details provided',
     })
     const user = await User.create({
       firstName,
       lastName,
       email,
       password: hashedPassword,
+      accountType,
       additionalDetails: profileDetails._id,
       image: "",
     })
