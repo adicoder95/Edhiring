@@ -1,11 +1,11 @@
-const JobType = require('../models/jobType');
+const AccountType = require('../models/accountType');
 const ErrorResponse = require('../utils/errorResponse.js');
 
 //create job category
-exports.createJobType = async (req, res, next) => {
+exports.createAccountType = async (req, res, next) => {
     try {
-        const jobT = await JobType.create({
-            jobTypeName: req.body.jobTypeName,
+        const jobT = await AccountType.create({
+            AccountTypeName: req.body.AccountTypeName,
             user: req.user.id
         });
         res.status(201).json({
@@ -21,7 +21,7 @@ exports.createJobType = async (req, res, next) => {
 //all jobs category
 exports.allJobsType = async (req, res, next) => {
     try {
-        const jobT = await JobType.find();
+        const jobT = await AccountType.find();
         res.status(200).json({
             success: true,
             jobT
@@ -32,9 +32,9 @@ exports.allJobsType = async (req, res, next) => {
 }
 
 //update job type
-exports.updateJobType = async (req, res, next) => {
+exports.updateAccountType = async (req, res, next) => {
     try {
-        const jobT = await JobType.findByIdAndUpdate(req.params.type_id, req.body, { new: true });
+        const jobT = await AccountType.findByIdAndUpdate(req.params.type_id, req.body, { new: true });
         res.status(200).json({
             success: true,
             jobT
@@ -46,9 +46,9 @@ exports.updateJobType = async (req, res, next) => {
 
 
 //delete job type
-exports.deleteJobType = async (req, res, next) => {
+exports.deleteAccountType = async (req, res, next) => {
     try {
-        const jobT = await JobType.findByIdAndRemove(req.params.type_id);
+        const jobT = await AccountType.findByIdAndRemove(req.params.type_id);
         res.status(200).json({
             success: true,
             message: "Job type deleted"
