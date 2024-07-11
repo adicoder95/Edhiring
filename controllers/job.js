@@ -138,7 +138,7 @@ exports.showJobs = async (req, res, next) => {
         if (title) {
             query.title = title;
         }
-        //Add perticular salary filter
+        //Add particular salary filter
         if (salary) {
             query.salary = salary;
         }
