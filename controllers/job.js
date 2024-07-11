@@ -51,57 +51,107 @@ exports.updateJob = async (req, res, next) => {
 
 
 //update job by id.
+// exports.showJobs = async (req, res, next) => {
+
+//     //enable search 
+//     const keyword = req.query.keyword ? {
+//         title: {
+//             $regex: req.query.keyword,
+//             $options: 'i'
+//         }
+//     } : {}
+
+
+//     // filter jobs by category ids
+//     let ids = [];
+//     const jobTypeCategory = await JobType.find({}, { _id: 1 });
+//     jobTypeCategory.forEach(cat => {
+//         ids.push(cat._id);
+//     })
+
+//     let cat = req.query.cat;
+//     let categ = cat !== '' ? cat : ids;
+
+
+//     //jobs by location
+//     let locations = [];
+//     const jobByLocation = await Job.find({}, { location: 1 });
+//     jobByLocation.forEach(val => {
+//         locations.push(val.location);
+//     });
+//     let setUniqueLocation = [...new Set(locations)];
+//     let location = req.query.location;
+//     let locationFilter = location !== '' ? location : setUniqueLocation;
+
+
+//     //enable pagination
+//     const pageSize = 5;
+//     const page = Number(req.query.pageNumber) || 1;
+//     //const count = await Job.find({}).estimatedDocumentCount();
+//     const count = await Job.find({ ...keyword, jobType: categ, location: locationFilter }).countDocuments();
+
+//     try {
+//         const jobs = await Job.find({ ...keyword, jobType: categ, location: locationFilter }).sort({ createdAt: -1 }).populate('jobType', 'jobTypeName').populate('user', 'firstName').skip(pageSize * (page - 1)).limit(pageSize)
+//         res.status(200).json({
+//             success: true,
+//             jobs,
+//             page,
+//             pages: Math.ceil(count / pageSize),
+//             count,
+//             setUniqueLocation
+
+//         });
+//     } catch (error) {
+//         next(error);
+//     }
+// }
+
+
 exports.showJobs = async (req, res, next) => {
-
-    //enable search 
-    const keyword = req.query.keyword ? {
-        title: {
-            $regex: req.query.keyword,
-            $options: 'i'
-        }
-    } : {}
-
-
-    // filter jobs by category ids
-    let ids = [];
-    const jobTypeCategory = await JobType.find({}, { _id: 1 });
-    jobTypeCategory.forEach(cat => {
-        ids.push(cat._id);
-    })
-
-    let cat = req.query.cat;
-    let categ = cat !== '' ? cat : ids;
-
-
-    //jobs by location
-    let locations = [];
-    const jobByLocation = await Job.find({}, { location: 1 });
-    jobByLocation.forEach(val => {
-        locations.push(val.location);
-    });
-    let setUniqueLocation = [...new Set(locations)];
-    let location = req.query.location;
-    let locationFilter = location !== '' ? location : setUniqueLocation;
-
-
-    //enable pagination
-    const pageSize = 5;
-    const page = Number(req.query.pageNumber) || 1;
-    //const count = await Job.find({}).estimatedDocumentCount();
-    const count = await Job.find({ ...keyword, jobType: categ, location: locationFilter }).countDocuments();
-
     try {
-        const jobs = await Job.find({ ...keyword, jobType: categ, location: locationFilter }).sort({ createdAt: -1 }).populate('jobType', 'jobTypeName').populate('user', 'firstName').skip(pageSize * (page - 1)).limit(pageSize)
+        const { keyword, location, jobType, title, salary } = req.body;
+
+        // Create an empty query object
+        let query = {};
+
+        // If keyword is provided, create a regex to match any of the words in jobType or title
+        if (keyword) {
+            const keywords = keyword.split(' ');
+            const regex = new RegExp(keywords.join('|'), 'i');
+            query.$or = [
+                { jobType: { $regex: regex } },
+                { title: { $regex: regex } }
+            ];
+        }
+
+        // Add location filter 
+        if (location) {
+            query.location = location;
+        }
+
+        // Add jobType filter 
+        if (jobType) {
+            query.jobType = jobType;
+        }
+
+        // Add title filter 
+        if (title) {
+            query.title = title;
+        }
+        //Add perticular salary filter
+        if (salary) {
+            query.salary = salary;
+        }
+
+
+        // Find jobs that match the query
+        const jobs = await Job.find(query);
+
         res.status(200).json({
             success: true,
-            jobs,
-            page,
-            pages: Math.ceil(count / pageSize),
-            count,
-            setUniqueLocation
-
+            jobs
         });
     } catch (error) {
         next(error);
     }
-}
+};
