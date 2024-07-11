@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+const bodyParser = require('body-parser');
+
 const userRoutes = require("./routes/user");
 const profileRoutes = require("./routes/profile");
 const jobRoutes = require("./routes/Job");
@@ -15,10 +17,14 @@ const dotenv = require("dotenv");
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 
+
 // Database connect
 database.connect();
 
 // Middlewares
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
@@ -30,11 +36,19 @@ app.use(fileUpload({
     tempFileDir: "/tmp",
 }));
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+    res.status(500).json({
+        success: false,
+        message: err.message,
+    });
+});
+
 // Routes
 app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/profile", profileRoutes);
-app.use("/api/v1/job", jobRoutes);
-app.use("/api/v1/type", jobTypeRoutes);
+app.use("/api", jobRoutes);
+app.use("/api", jobTypeRoutes);
 
 // Default route
 app.get("/", (req, res) => {
