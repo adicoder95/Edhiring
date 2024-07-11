@@ -2,6 +2,7 @@ const JobType = require('../models/jobType');
 
 // Create job type
 exports.createJobType = async (req, res, next) => {
+    console.log('Create JobType Endpoint Hit');
     try {
         const jobType = await JobType.create({
             jobTypeName: req.body.jobTypeName,
