@@ -5,6 +5,31 @@ const User = require("../models/User");
 // Configuring dotenv to load environment variables from .env file
 dotenv.config();
 
+
+exports.protect = async (req, res, next) => {
+    let token;
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith('Bearer')
+    ) {
+        try {
+            token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            req.user = await User.findById(decoded.id).select('-password');
+            next();
+        } catch (error) {
+            console.error(error);
+            res.status(401).json({ success: false, message: 'Not authorized' });
+        }
+    }
+
+    if (!token) {
+        res.status(401).json({ success: false, message: 'Not authorized, no token' });
+    }
+};
+
+
+
 // This function is used as middleware to authenticate user requests
 exports.auth = async (req, res, next) => {
 	try {
@@ -61,16 +86,32 @@ exports.isCandidate = async (req, res, next) => {
 };
 exports.isAdmin = async (req, res, next) => {
     try {
-        const userDetails = await User.findOne({ email: req.user.email });
-        console.log(userDetails.accountType);
-        if (userDetails.accountType !== "Admin") {
+        console.log('req.user:', req.user); // Debugging statement
+        if (!req.user || !req.user.email) {
             return res.status(401).json({
                 success: false,
-                message: "This is a Protected Route for Admin",
+                message: 'Unauthorized access',
             });
         }
-        next(); // Don't forget to call next() if the user is an admin
+
+        const userDetails = await User.findOne({ email: req.user.email });
+        if (!userDetails) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not found',
+            });
+        }
+        console.log('userDetails:', userDetails); // Debugging statement
+
+        if (userDetails.accountType !== 'Admin') {
+            return res.status(401).json({
+                success: false,
+                message: 'This is a Protected Route for Admin',
+            });
+        }
+        next();
     } catch (error) {
+        console.error('Error in isAdmin middleware:', error); // Debugging statement
         return res.status(500).json({
             success: false,
             message: `User Role Can't be Verified`,
