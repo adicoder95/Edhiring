@@ -26,7 +26,7 @@ try {
         },
         accountType: {
             type: String,
-            enum: ["Candidate", "Employee", "Admin"],
+            enum: ["Candidate", "Employer", "Admin"],
             // required: true,
         },
         additionalDetails: {
@@ -35,6 +35,18 @@ try {
             ref: "Profile",
         },
     }));
+
+    User.schema.pre('save', async function(next) {
+        if (this.accountType === 'Candidate') {
+            this.additionalDetails = await mongoose.model('Profile').findOne({ email: this.email }); 
+        } else if (this.accountType === 'Employer') {
+            this.additionalDetails = await mongoose.model('EmployerProfile').findOne({ email: this.email }); 
+        }
+        else if (this.accountType === 'Admin') {
+            this.additionalDetails = await mongoose.model('EmployerProfile').findOne({ email: this.email }); 
+        }
+        next();
+    });
 }
 
 module.exports = User;
