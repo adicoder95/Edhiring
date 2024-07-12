@@ -8,7 +8,7 @@ const { protect } = require('../middlewares/auth');
 router.post('/message/send', protect, sendMessage);
 
 // Get received messages 
-router.get('/message/received', getMessages);
+router.get('/message/received', protect, getMessages);
 
 
 module.exports = router;
