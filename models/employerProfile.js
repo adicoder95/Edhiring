@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
-// Define the Profile schema
-const profileSchema = new mongoose.Schema({
+const employerProfileSchema = new mongoose.Schema({
     logo: {
         type: String,
         required: true,
@@ -77,7 +76,7 @@ const profileSchema = new mongoose.Schema({
 });
 
 // Pre-save hook to populate fullName from associated User model
-profileSchema.pre('save', async function(next) {
+employerProfileSchema.pre('save', async function(next) {
     if (this.email) {
         const user = await mongoose.model('User').findById(this.email);
         this.fullName = `${user.firstName} ${user.lastName}`;
@@ -86,4 +85,4 @@ profileSchema.pre('save', async function(next) {
 });
 
 // Export the Profile model
-module.exports = mongoose.model("Profile", profileSchema);
+module.exports = mongoose.model("EmployerProfile", employerProfileSchema);
