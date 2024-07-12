@@ -8,6 +8,8 @@ const profileRoutes = require("./routes/profile");
 const jobRoutes = require("./routes/Job");
 const jobTypeRoutes = require("./routes/jobType");
 
+const applyRoutes = require('./routes/applyRoutes');
+
 const database = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -17,6 +19,8 @@ const dotenv = require("dotenv");
 dotenv.config();
 const PORT = process.env.PORT || 3000;
 
+const User = require('./models/User');
+const JobType = require('./models/jobType');
 
 // Database connect
 database.connect();
@@ -35,6 +39,10 @@ app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp",
 }));
+
+// Mount routes
+app.use('/api/v1', applyRoutes); 
+app.use('/api/v1/users', userRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
