@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import 'tailwindcss/tailwind.css';
 // import { ModalContext } from '../App';
 import { Context } from './ContextProvide';
+import { Link } from 'react-router-dom';
 
 
 type contextstate = {
@@ -50,9 +51,11 @@ const LoginModal: React.FC = () => {
               I've read and agree with Terms of Service and our Privacy Policy
             </label>
           </div>
-          <button type="submit" className="w-full bg-signup text-white py-2 rounded mb-4">
-            LOGIN
-          </button>
+          <Link to='/d'>
+            <button type="submit" className="w-full bg-signup text-white py-2 rounded mb-4">
+              LOGIN
+            </button>
+          </Link>
         </form>
         <div className="text-center mb-4 absolute text-white translate-y-16 translate-x-40">
           <p>Don't have an account? <button onClick={()=>{setloginModal(false)

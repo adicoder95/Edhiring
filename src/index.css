@@ -6,3 +6,41 @@
 *{
     overflow-x: hidden;
 }
+.custom-dropdown {
+    background-color: #f9f9f9; /* Light background */
+    border-color: #ccc; /* Border color */
+    /* color: #333; Text color */
+    /* transition: border-color 0.3s ease-in-out; Smooth transition for border */
+
+    color:#296569;
+    font-weight: 700;
+    padding-right: 3px;
+    padding-left: 3px;
+    
+  }
+  
+  .custom-dropdown:hover, .custom-dropdown:focus {
+    border-color: #007bff; /* Change border color on hover and focus */
+
+    
+  }
+  
+  .custom-checkbox {
+    width: 1.25rem; /* Width */
+    height: 1.25rem; /* Height */
+    border-radius: 0.25rem; /* Rounded corners */
+    transition: background-color 0.3s ease-in-out; /* Smooth transition for background */
+    
+  }
+  
+  .custom-checkbox:checked {
+    background-color: #296569; /* Background color when checked */
+    border-color: #296569; 
+    color: #296569;/* Border color when checked */
+    accent-color: #296569;
+  }
+
+  input[type="checkbox"] {
+    /* display: none; */
+    background-color: #296569;
+  }

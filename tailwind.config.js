@@ -11,10 +11,16 @@ export default {
         logo:"#024059",
         signup:"#F26A23",
         primary:"#0B2C2F33",
+        primary1:"#336667",
         secondary:"#3B848B",
         grey: "#D9D9D9",
         error: "#F25050",
         ternary: "#DB6A93",
+        sidebar_font:"#A7AEBF",
+        toggle_off:"#F5F5F5",
+        toggle_on:"#F2981B4D",
+        navy_blue:"#064065",
+        buttons:"#296569",
         "light-grey": "#E3E0EB",
         "ternary-light": "#F7CFDB",
         "orange-600": "#FBE2BD",
@@ -37,7 +43,11 @@ export default {
         "fade-in": {
           "0%": { opacity: 0 },
           "100%": { opacity: 1 },
-        },
+        },"reducetime": {
+          "0%": { width: "0" },
+          "100%": { width: "100%",display : "block" },
+        }
+
       },
       safeList: ["animate-[ease-in-out]"],
       animation: {
@@ -46,6 +56,9 @@ export default {
         widtho: "widthout 1s backwards",
         "drop-in": "drop-in 0.5s cubic-bezier(0.21, 1.02, 0.85, 0.96)",
         "fade-in": "fade-in 1s ease-in-out",
+        'reducetime': 'reducetime 0.5s ease-out', 
+        width: "width 1s forwards",
+        
       },
     },
   },
