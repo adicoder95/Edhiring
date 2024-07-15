@@ -1,5 +1,7 @@
+const user = require('../models/User')
 const Job = require('../models/job');
 const JobType = require('../models/jobType');
+const Application = require('../models/jobApplicationModel');
 
 //create job
 exports.createJob = async (req, res, next) => {
@@ -12,6 +14,11 @@ exports.createJob = async (req, res, next) => {
             jobType: req.body.jobType,
             user: req.user.id
         });
+
+        // Update job to include application reference
+        // job.applications.push(Application._id);
+        await job.save();
+
         res.status(201).json({
             success: true,
             job
@@ -39,7 +46,7 @@ exports.singleJob = async (req, res, next) => {
 //update job by id.
 exports.updateJob = async (req, res, next) => {
     try {
-        const job = await Job.findByIdAndUpdate(req.params.job_id, req.body, { new: true }).populate('salary','jobType','description','available');
+        const job = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.status(200).json({
             success: true,
             job
@@ -49,62 +56,6 @@ exports.updateJob = async (req, res, next) => {
     }
 }
 
-
-//update job by id.
-// exports.showJobs = async (req, res, next) => {
-
-//     //enable search 
-//     const keyword = req.query.keyword ? {
-//         title: {
-//             $regex: req.query.keyword,
-//             $options: 'i'
-//         }
-//     } : {}
-
-
-//     // filter jobs by category ids
-//     let ids = [];
-//     const jobTypeCategory = await JobType.find({}, { _id: 1 });
-//     jobTypeCategory.forEach(cat => {
-//         ids.push(cat._id);
-//     })
-
-//     let cat = req.query.cat;
-//     let categ = cat !== '' ? cat : ids;
-
-
-//     //jobs by location
-//     let locations = [];
-//     const jobByLocation = await Job.find({}, { location: 1 });
-//     jobByLocation.forEach(val => {
-//         locations.push(val.location);
-//     });
-//     let setUniqueLocation = [...new Set(locations)];
-//     let location = req.query.location;
-//     let locationFilter = location !== '' ? location : setUniqueLocation;
-
-
-//     //enable pagination
-//     const pageSize = 5;
-//     const page = Number(req.query.pageNumber) || 1;
-//     //const count = await Job.find({}).estimatedDocumentCount();
-//     const count = await Job.find({ ...keyword, jobType: categ, location: locationFilter }).countDocuments();
-
-//     try {
-//         const jobs = await Job.find({ ...keyword, jobType: categ, location: locationFilter }).sort({ createdAt: -1 }).populate('jobType', 'jobTypeName').populate('user', 'firstName').skip(pageSize * (page - 1)).limit(pageSize)
-//         res.status(200).json({
-//             success: true,
-//             jobs,
-//             page,
-//             pages: Math.ceil(count / pageSize),
-//             count,
-//             setUniqueLocation
-
-//         });
-//     } catch (error) {
-//         next(error);
-//     }
-// }
 
 
 exports.showJobs = async (req, res, next) => {
@@ -138,7 +89,7 @@ exports.showJobs = async (req, res, next) => {
         if (title) {
             query.title = title;
         }
-        //Add particular salary filter
+        //Add perticular salary filter
         if (salary) {
             query.salary = salary;
         }
@@ -150,6 +101,78 @@ exports.showJobs = async (req, res, next) => {
         res.status(200).json({
             success: true,
             jobs
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+
+exports.getJobApplications = async (req, res) => {
+  try {
+    const { jobId } = req.body; // assuming job ID is available in req.body
+    const employeeId = req.user.id; // assuming user ID is available in req.user
+
+    // Debug logging
+    console.log(`jobId: ${jobId}, employeeId: ${employeeId}`);
+
+    // Verify that the job exists and is created by the logged-in employee
+    const job = await Job.findOne({ _id: jobId, user: employeeId });
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: 'Job not found or not authorized',
+      });
+    }
+
+    // Fetch applications for the specific job
+    const applications = await Application.find({ job: jobId });
+
+    res.status(200).json({
+      success: true,
+      applications,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching job applications',
+    });
+  }
+};
+
+exports.updateApplicationStatus = async (req, res, next) => {
+    try {
+        const { applicationId } = req.params;
+        const { status } = req.body;
+        const employeeId = req.user.id;
+
+        // Find the application by ID
+        const application = await Application.findById(applicationId);
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found',
+            });
+        }
+
+        // Check if the job belongs to the logged-in employee
+        // if (application.job.user.toString() !== employeeId) {
+        //     return res.status(403).json({
+        //         success: false,
+        //         message: 'Not authorized to update this application',
+        //     });
+        // }
+
+        // Update the application status
+        application.status = status;
+        await application.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Application status updated successfully',
+            application,
         });
     } catch (error) {
         next(error);
