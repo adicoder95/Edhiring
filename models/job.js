@@ -38,7 +38,10 @@ const jobSchema = new mongoose.Schema({
     user: {
         type: ObjectId,
         ref: "User",
-        required: true
+    },
+    employer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User', 
     },
 }, { timestamps: true })
 
