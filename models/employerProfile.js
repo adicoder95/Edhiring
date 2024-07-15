@@ -12,13 +12,15 @@ const employerProfileSchema = new mongoose.Schema({
         default: 'default-coverPhoto-pic-url',
     },
     email:{
-        type: mongoose.Schema.Types.ObjectId,
+        // type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: 'User', 
-        required: true
+        // required: true
     },
     contact: {
         type: Number,
-        trim: true,
+        required: false,
+        // trim: true,
     },
     instituteName: {
         type: String,
@@ -53,7 +55,7 @@ const employerProfileSchema = new mongoose.Schema({
     },
     currentCity:{
         type: String,
-        required: true,
+        // required: true,
         default: 'Unknown',
     },
     pincode:{
@@ -71,15 +73,15 @@ const employerProfileSchema = new mongoose.Schema({
     },
     fullName: {
         type: String,
-        required: true
+        // required: true
     }
 });
 
 // Pre-save hook to populate fullName from associated User model
 employerProfileSchema.pre('save', async function(next) {
     if (this.email) {
-        const user = await mongoose.model('User').findById(this.email);
-        this.fullName = `${user.firstName} ${user.lastName}`;
+        const user = await mongoose.model('User').findOne({email:this.email});
+        // this.fullName = `${user.firstName} ${user.lastName}`;
     }
     next();
 });
