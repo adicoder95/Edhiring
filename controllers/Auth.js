@@ -64,18 +64,43 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     // Create the Additional Profile For User
-    const profileDetails = await Profile.create({
-      gender: 'Not specified',
-      dateOfBirth: new Date('2000-01-01'),
-      about: 'No details provided',
-    })
+    let additionalDetails;
+    if (accountType === 'Candidate') {
+      additionalDetails = await Profile.create({
+        gender: 'Not specified',
+        dateOfBirth: new Date('2000-01-01'),
+        about: 'No details provided',
+      });
+    } else if (accountType === 'Employer' || accountType === 'Admin') {
+      additionalDetails = await employerProfile.create({
+        logo,
+        coverPhoto,
+        email,
+        contact,
+        instituteName,
+        institueContact,
+        instituteEmail,
+        website,
+        foundingDate,
+        socialNetwork,
+        about,
+        pincode,
+        address1,
+        address2,
+        address3,
+        currentCity,
+        // Add other default fields as needed
+      });
+    }
+
+
     const user = await User.create({
       firstName,
       lastName,
       email,
       password: hashedPassword,
       accountType,
-      additionalDetails: profileDetails._id,
+      additionalDetails: additionalDetails._id,
       image: "",
     })
 
@@ -109,7 +134,7 @@ exports.login = async (req, res) => {
     }
 
     // Find user with provided email
-    const user = await User.findOne({ email }).populate("additionalDetails")
+    const user = await User.findOne({ email }).populate("additionalDetails");
 
     // If user not found with provided email
     if (!user) {
