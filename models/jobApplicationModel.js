@@ -8,14 +8,18 @@ const jobApplicationSchema = new mongoose.Schema({
     },
     candidate: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Assuming you have a User model for candidates
+        ref: 'User', 
         required: true
     },
     appliedAt: {
         type: Date,
         default: Date.now
+    },
+    status: {
+        type: String,
+        enum: ['Pending', 'Accepted', 'Rejected'],
+        default: 'Pending'
     }
-    // Add more fields as needed
 });
 
 const JobApplication = mongoose.model('JobApplication', jobApplicationSchema);
