@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken")
 const otpGenerator = require("otp-generator")
 const mailSender = require("../utils/mailSender")
 const Profile = require("../models/Profile")
+const employerProfile = require("../models/employerProfile")
 require("dotenv").config()
 
 // Signup Controller for Registering USers
@@ -62,6 +63,7 @@ exports.signup = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10)
+    console.log("hs "+hashedPassword);
 
     // Create the Additional Profile For User
     let additionalDetails;
@@ -72,26 +74,29 @@ exports.signup = async (req, res) => {
         about: 'No details provided',
       });
     } else if (accountType === 'Employer' || accountType === 'Admin') {
+      console.log('generating Employer');
       additionalDetails = await employerProfile.create({
-        logo,
-        coverPhoto,
+        logo: 'logo.png',
+        coverPhoto: 'coverpic.png',
         email,
-        contact,
-        instituteName,
-        institueContact,
-        instituteEmail,
-        website,
-        foundingDate,
-        socialNetwork,
-        about,
-        pincode,
-        address1,
-        address2,
-        address3,
-        currentCity,
+        contact: 123456789,
+        instituteName: 'ABC',
+        institueContact: 1234567,
+        instituteEmail: 'example.gmail.com',
+        website: 'abc.com',
+        foundingDate: '',
+        socialNetwork: 'abc.example.com',
+        about: 'abcde',
+        pincode: 12345,
+        address1: 'abc ',
+        address2: '',
+        address3: '',
+        currentCity: '',
+        fullName: 'abc',
         // Add other default fields as needed
       });
     }
+    console.log('employee created');
 
 
     const user = await User.create({
