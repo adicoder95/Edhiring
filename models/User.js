@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 let User;
 try {
-    User = mongoose.model("user");
+    User = mongoose.model("User");
 } catch {
-    User = mongoose.model("user", new mongoose.Schema({
+    User = mongoose.model("User", new mongoose.Schema({
         firstName: {
             type: String,
             required: true,
@@ -27,25 +27,25 @@ try {
         accountType: {
             type: String,
             enum: ["Candidate", "Employer", "Admin"],
-            // required: true,
+            required: true,
         },
         additionalDetails: {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
-            ref: "Profile",
+            refPath: 'accountType', // Dynamic reference based on accountType
         },
     }));
 
     User.schema.pre('save', async function(next) {
-        if (this.accountType === 'Candidate') {
-            this.additionalDetails = await mongoose.model('Profile').findOne({ email: this.email }); 
-        } else if (this.accountType === 'Employer') {
-            this.additionalDetails = await mongoose.model('EmployerProfile').findOne({ email: this.email }); 
+        try {
+            if (this.accountType === 'Candidate') {
+                this.additionalDetails = await mongoose.model('Profile').findOne({ email: this.email });
+            } else if (this.accountType === 'Employer' || this.accountType === 'Admin') {
+                this.additionalDetails = await mongoose.model('EmployerProfile').findOne({ email: this.email });
+            }
+            next();
+        } catch (error) {
+            next(error);
         }
-        else if (this.accountType === 'Admin') {
-            this.additionalDetails = await mongoose.model('EmployerProfile').findOne({ email: this.email }); 
-        }
-        next();
     });
 }
 
