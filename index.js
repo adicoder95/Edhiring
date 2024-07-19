@@ -16,6 +16,7 @@ const applyRoutes = require('./routes/applyRoutes');
 const messageRoutes = require('./routes/message');
 const employeeRoutes = require('./routes/employeeRoutes');
 
+const trackingRoute = require('./routes/tracking'); 
 
 const database = require("./config/database");
 const cookieParser = require("cookie-parser");
@@ -77,6 +78,7 @@ app.use("/api", jobRoutes);
 app.use("/api", jobTypeRoutes);
 app.use('/api/v1/employee', employeeRoutes); 
 
+app.use('/api', trackingRoute);
 
 // Default route
 app.get("/", (req, res) => {
