@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-const mailSender = async (email, title, body) => {
+const mailSender = async (email, title, body, trackingUrl) => {
     try {
         let transporter = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
@@ -12,11 +12,15 @@ const mailSender = async (email, title, body) => {
             }
         });
 
+        // Include tracking pixel in the body
+        const trackingPixel = `<img src="${trackingUrl}" alt="" width="1" height="1" style="display: none;">`;
+        const emailBody = `${body}${trackingPixel}`;
+
         let info = await transporter.sendMail({
-            from: `"Employer" <${process.env.MAIL_USER}>`,
+            from: `"EdHiring" <${process.env.MAIL_USER}>`,
             to: email,
             subject: title,
-            html: body,
+            html: emailBody,
         });
 
         console.log("Message sent: %s", info.messageId);
@@ -27,3 +31,5 @@ const mailSender = async (email, title, body) => {
 }
 
 module.exports = mailSender;
+
+
