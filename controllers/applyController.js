@@ -1,6 +1,8 @@
 const JobApplication = require('../models/jobApplicationModel');
 const Job = require('../models/job');
 
+let applicationCount = 0; // Initialize outside the function
+
 exports.applyForJob = async (req, res, next) => {
     try {
         const { jobId } = req.body;
@@ -17,6 +19,9 @@ exports.applyForJob = async (req, res, next) => {
             job: jobId,
             candidate: candidateId
         });
+
+        applicationCount++; // Increment the application count
+        console.log(`Total applications: ${applicationCount}`);
 
         res.status(201).json({ success: true, data: newApplication });
     } catch (error) {
