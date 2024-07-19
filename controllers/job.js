@@ -144,17 +144,31 @@ exports.getJobApplications = async (req, res) => {
 exports.updateApplicationStatus = async (req, res, next) => {
     try {
         const { applicationId, status } = req.body;
+        const employer = await user.findById(req.user.id); 
 
         const application = await Application.findById(applicationId);
         if (!application) {
-            return res.status(404).json({ success: false, message: 'Job application not found' });
+            return res.status(404).json({ success: false, message: 'Application not found' });
         }
 
-        await application.updateStatus(status);
+        await application.updateStatus(status, employer.email, employer.emailPassword);
 
-        res.status(200).json({ success: true, message: 'Job application status updated and notification sent' });
+        res.json({ success: true, message: 'Job application status updated and notification sent' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Error updating job application status' });
+        console.error('Error updating application status: ', error.message);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+//deleting job
+exports.deleteJob = async (req, res, next) => {
+    try {
+        await Job.findByIdAndDelete(req.params._id);
+        res.status(200).json({
+            success: true,
+            message: 'Job deleted'
+        });
+    } catch (error) {
+        next(error);
     }
 };
