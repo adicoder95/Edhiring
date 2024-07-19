@@ -4,8 +4,11 @@ const JobType = require('../models/jobType');
 const Application = require('../models/jobApplicationModel');
 
 //create job
+let jobCount = 0; // Initialize outside the function
+
 exports.createJob = async (req, res, next) => {
     try {
+
         const job = await Job.create({
             title: req.body.title,
             description: req.body.description,
@@ -15,6 +18,9 @@ exports.createJob = async (req, res, next) => {
             user: req.user.id
         });
 
+        jobCount++; // Increment the job count
+        console.log(`Total jobs created: ${jobCount}`);
+
         // Update job to include application reference
         // job.applications.push(Application._id);
         await job.save();
@@ -22,11 +28,11 @@ exports.createJob = async (req, res, next) => {
         res.status(201).json({
             success: true,
             job
-        })
+        });
     } catch (error) {
         next(error);
     }
-}
+};
 
 
 //single job
