@@ -18,6 +18,7 @@ exports.signup = async (req, res) => {
       lastName,
       email,
       password,
+      contact,
       accountType,
       otp,
     } = req.body
@@ -27,6 +28,7 @@ exports.signup = async (req, res) => {
       !lastName ||
       !email ||
       !password ||
+      !contact ||
       !accountType ||
       !otp
     ) {
@@ -96,7 +98,7 @@ exports.signup = async (req, res) => {
         // Add other default fields as needed
       });
     }
-    console.log('employee created');
+    console.log('employer created');
 
 
     const user = await User.create({
@@ -104,6 +106,7 @@ exports.signup = async (req, res) => {
       lastName,
       email,
       password: hashedPassword,
+      contact,
       accountType,
       additionalDetails: additionalDetails._id,
       image: "",
