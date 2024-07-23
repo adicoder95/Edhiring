@@ -8,12 +8,15 @@ const fs = require('fs');
 
 exports.getProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id)
-        // .populate('additionalDetails');
+        
+        const user = await User.findById(req.user.id).populate('additionalDetails');
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
+        console.log("grf2")
+        
         res.status(200).json({ success: true, profile: user.additionalDetails });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Server error' });
@@ -22,8 +25,7 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id)
-        // .populate('additionalDetails');
+        const user = await User.findById(req.user.id).populate('additionalDetails');
 
         // Ensure user and additionalDetails exist
         if (!user || !user.additionalDetails) {
@@ -69,47 +71,31 @@ exports.updateProfile = async (req, res) => {
     }
 };
 
-
-
-exports.updateDisplayPicture = async (req, res) => {
-    try {
-      // Get the file from the request
-      const { file } = req;
-      if (!file) {
-        return res.status(400).json({
-          success: false,
-          message: "No file uploaded",
-        });
-      }
-  
-      // Get the current user
-      const userId = req.user.id;
-  
-      // Upload the image to Cloudinary
-      const result = await cloudinary.uploader.upload(file.path, {
-        folder: "profile_pictures",
-      });
-  
-      // Remove the file from local storage after upload
-      fs.unlinkSync(file.path);
-  
-      // Update the user's profile picture URL in the database
-      const updatedUser = await User.findByIdAndUpdate(
-        userId,
-        { profilePic: result.secure_url },
-        { new: true }
-      );
-  
-      res.status(200).json({
-        success: true,
-        message: "Image updated successfully",
-        data: updatedUser,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        success: false,
-        message: error.message,
-      });
-    }
-  };
+exports.updateProfilePic = async (req, res) => {
+  try {
+    const profilePic = req.files.profilePic
+    const userId = req.user.id
+    const image = await uploadImageToCloudinary(
+      profilePic,
+      process.env.FOLDER_NAME,
+      1000,
+      1000
+    )
+    console.log(image)
+    const updatedProfile = await User.findByIdAndUpdate(
+      { _id: userId },
+      { image: image.secure_url },
+      { new: true }
+    )
+    res.send({
+      success: true,
+      message: `Image Updated successfully`,
+      data: updatedProfile,
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    })
+  }
+};
