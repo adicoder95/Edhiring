@@ -1,4 +1,4 @@
-const Profile = require("../models/Profile");
+const Candidate = require("../models/Profile");
 const User = require("../models/User");
 const { uploadImageToCloudinary } = require("../utils/cloudinary");
 const cloudinary = require("../config/cloudinaryConfig");
@@ -13,9 +13,9 @@ exports.getProfile = async (req, res) => {
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
-        console.log("grf2")
+        console.log("g22")
         
-        res.status(200).json({ success: true, profile: user.additionalDetails });
+        res.status(200).json({ success: true, Candidate: user.additionalDetails });
 
     } catch (error) {
         console.error(error);
@@ -25,13 +25,14 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id).populate('additionalDetails');
+        const user = await User.findById(req.user.id)
+        // .populate('additionalDetails');
 
         // Ensure user and additionalDetails exist
         if (!user || !user.additionalDetails) {
             return res.status(404).json({ success: false, message: 'User or profile not found' });
         }
-
+      
         const profileId = user.additionalDetails._id;
         let { profilePic, gender, contactNumber, currentCity, dateOfBirth, about } = req.body;
 
@@ -58,13 +59,14 @@ exports.updateProfile = async (req, res) => {
             }
         });
 
-        const profile = await Profile.findByIdAndUpdate(
+        const candidate = await Candidate.findByIdAndUpdate(
             profileId,  // Assuming _id is used to identify Profile
             updateData,
             { new: true, runValidators: true }
         );
+        console.log('this is profileId'+profileId);
 
-        res.status(200).json({ success: true, profile});
+        res.status(200).json({ success: true, candidate});
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Server error' });
