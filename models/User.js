@@ -42,7 +42,7 @@ try {
     User.schema.pre('save', async function(next) {
         try {
             if (this.accountType === 'Candidate') {
-                this.additionalDetails = await mongoose.model('Profile').findOne({ email: this.email });
+                this.additionalDetails = await mongoose.model('Candidate').findOne({ email: this.email });
             } else if (this.accountType === 'Employer' || this.accountType === 'Admin') {
                 this.additionalDetails = await mongoose.model('EmployerProfile').findOne({ email: this.email });
             }
