@@ -14,12 +14,12 @@ const employerProfileSchema = new mongoose.Schema({
     email:{
         // type: mongoose.Schema.Types.ObjectId,
         type: String,
-        ref: 'User', 
-        // required: true
+        // ref: 'User', 
+        required: true
     },
     contact: {
         type: Number,
-        required: false,
+        required: true,
         // trim: true,
     },
     instituteName: {
@@ -30,6 +30,7 @@ const employerProfileSchema = new mongoose.Schema({
     institueContact: {
         type: Number,
         trim: true,
+        required: true
     },
     instituteEmail:{
         type: String,
@@ -41,6 +42,7 @@ const employerProfileSchema = new mongoose.Schema({
     },
     foundingDate: {
         type: Date,
+        required: true,
         default: Date.now,
     },
     socialNetwork:{
@@ -55,7 +57,7 @@ const employerProfileSchema = new mongoose.Schema({
     },
     currentCity:{
         type: String,
-        // required: true,
+        required: true,
         default: 'Unknown',
     },
     pincode:{
@@ -64,6 +66,7 @@ const employerProfileSchema = new mongoose.Schema({
     },
     address1:{
         type: String,
+        required: true
     },
     address2:{
         type: String,
@@ -73,7 +76,7 @@ const employerProfileSchema = new mongoose.Schema({
     },
     fullName: {
         type: String,
-        // required: true
+        required: true
     }
 });
 
@@ -87,4 +90,4 @@ employerProfileSchema.pre('save', async function(next) {
 });
 
 // Export the Profile model
-module.exports = mongoose.model("EmployerProfile", employerProfileSchema);
+module.exports = mongoose.model("Employer", employerProfileSchema);
