@@ -15,7 +15,6 @@ exports.getProfile = async (req, res) => {
         }
         
         res.status(200).json({ success: true, Candidate: user.additionalDetails });
-        console.log("g22")
         
     } catch (error) {
         console.error(error);
@@ -72,35 +71,6 @@ exports.updateProfile = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
-
-// exports.updateProfilePic = async (req, res) => {
-//   try {
-//     const profilePic = req.files.profilePic
-//     const userId = req.user.id
-//     const image = await uploadImageToCloudinary(
-//       profilePic,
-//       process.env.FOLDER_NAME,
-//       1000,
-//       1000
-//     )
-//     console.log(image)
-//     const updatedProfile = await User.findByIdAndUpdate(
-//       { _id: userId },
-//       { image: image.secure_url },
-//       { new: true }
-//     )
-//     res.send({
-//       success: true,
-//       message: `Image Updated successfully`,
-//       data: updatedProfile,
-//     })
-//   } catch (error) {
-//     return res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     })
-//   }
-// };
 
 exports.updateProfilePic = async (req, res) => {
   try {
