@@ -3,70 +3,70 @@ const mongoose = require("mongoose");
 const employerProfileSchema = new mongoose.Schema({
     logo: {
         type: String,
-        required: true,
-        default: 'default-logo-pic-url',
+        // required: true,
+        default: '',
     },
     coverPhoto: {
         type: String,
-        required: true,
+        // required: true,
         default: 'default-coverPhoto-pic-url',
     },
     email:{
         // type: mongoose.Schema.Types.ObjectId,
         type: String,
         // ref: 'User', 
-        required: true
+        // required: true
     },
     contact: {
         type: Number,
-        required: true,
+        // required: true,
         // trim: true,
     },
     instituteName: {
         type: String,
-        required: true,
+        // required: true,
         default: 'Not specified',
     },
     institueContact: {
         type: Number,
         trim: true,
-        required: true
+        // required: true
     },
     instituteEmail:{
         type: String,
-        required: true
+        // required: true
     },
     website:{
         type: String,
-        required: true
+        // required: true
     },
     foundingDate: {
         type: Date,
-        required: true,
+        // required: true,
         default: Date.now,
     },
     socialNetwork:{
         type: String,
-        required: true
+        // required: true
     },
     about: {
         type: String,
-        required: true,
+        // required: true,
         trim: true,
         default: 'No details provided',
     },
     currentCity:{
         type: String,
-        required: true,
+        // required: true,
         default: 'Unknown',
     },
     pincode:{
         type:Number,
-        required:true
+        // required:true
     },
     address1:{
         type: String,
-        required: true
+        // required: true
     },
     address2:{
         type: String,
@@ -76,7 +76,7 @@ const employerProfileSchema = new mongoose.Schema({
     },
     fullName: {
         type: String,
-        required: true
+        // required: true
     }
 });
 
