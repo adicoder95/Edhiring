@@ -13,10 +13,10 @@ exports.getProfile = async (req, res) => {
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
-        console.log("g22")
         
         res.status(200).json({ success: true, Candidate: user.additionalDetails });
-
+        console.log("g22")
+        
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Server error' });
@@ -73,31 +73,64 @@ exports.updateProfile = async (req, res) => {
     }
 };
 
+// exports.updateProfilePic = async (req, res) => {
+//   try {
+//     const profilePic = req.files.profilePic
+//     const userId = req.user.id
+//     const image = await uploadImageToCloudinary(
+//       profilePic,
+//       process.env.FOLDER_NAME,
+//       1000,
+//       1000
+//     )
+//     console.log(image)
+//     const updatedProfile = await User.findByIdAndUpdate(
+//       { _id: userId },
+//       { image: image.secure_url },
+//       { new: true }
+//     )
+//     res.send({
+//       success: true,
+//       message: `Image Updated successfully`,
+//       data: updatedProfile,
+//     })
+//   } catch (error) {
+//     return res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     })
+//   }
+// };
+
 exports.updateProfilePic = async (req, res) => {
   try {
-    const profilePic = req.files.profilePic
+    const profilePic = req.files.logoPic
     const userId = req.user.id
+
     const image = await uploadImageToCloudinary(
       profilePic,
       process.env.FOLDER_NAME,
       1000,
       1000
     )
-    console.log(image)
-    const updatedProfile = await User.findByIdAndUpdate(
-      { _id: userId },
-      { image: image.secure_url },
+    console.log(image.secure_url)
+
+    const user = await User.findById(userId).populate('additionalDetails');
+
+    const updatedProfile = await Candidate.findByIdAndUpdate(
+      user.additionalDetails._id,
+      { profilePic : image.secure_url },
       { new: true }
-    )
+    );
     res.send({
       success: true,
       message: `Image Updated successfully`,
       data: updatedProfile,
-    })
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: error.message,
-    })
+    });
   }
 };
