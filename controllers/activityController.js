@@ -26,4 +26,18 @@ const toggleStarActivity = async (req, res) => {
   }
 };
 
-module.exports = { getRecentActivities, toggleStarActivity };
+const getStarredActivities = async (req, res) => {
+  try {
+    const starredActivities = await RecentActivity.find({ user: req.user.id, isStarred: true });
+
+    if (!starredActivities.length) {
+      return res.status(404).json({ success: false, message: 'No starred activities found' });
+    }
+
+    res.status(200).json({ success: true, starredActivities });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = { getRecentActivities, toggleStarActivity, getStarredActivities };
