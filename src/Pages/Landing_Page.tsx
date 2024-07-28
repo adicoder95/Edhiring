@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import LandingLayout from '../Layouts/LandingLayout';
 import intropic from '../assets/intropic.png';
 import SearchBar from '../Components/SearchBar';

@@ -1,5 +1,5 @@
-import React from 'react'
-import image from '../assets/Square_icon.svg'
+// import React from 'react'
+// import image from '../assets/Square_icon.svg'
 import Feature from './Feature';
 export default function Qualtities() {
     const qualitieslist = [

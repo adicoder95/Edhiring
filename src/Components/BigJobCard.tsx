@@ -1,4 +1,4 @@
-import React from 'react'
+// import React from 'react'
 import location_icon from '../assets/location_icon.svg';
 import job_icon from '../assets/jobCard_image.svg';
 
@@ -19,7 +19,7 @@ export default function BigJobCard({ Apply,image=job_icon,title="Lorem ipsum",su
         <div className="bg-white px-6 rounded-lg shadow-lg flex flex-col space-y-4 mx-1">
             {/* <h2 className="text-xl font-bold text-blue-900">Jobs Applied Recently</h2> */}
             <div className="flex items-center space-x-4">
-                <img src={job_icon} alt="Job Icon" className="h-16 w-16" />
+                <img src={image} alt="Job Icon" className="h-16 w-16" />
                 <div className="flex flex-col space-y-3">
                     <h3 className="text-lg font-semibold">{title}</h3>
                     <p className="text-gray-600">{subtitle}
@@ -43,10 +43,10 @@ export default function BigJobCard({ Apply,image=job_icon,title="Lorem ipsum",su
             </div>
             <hr />
             <div>
-                <div className="flex justify-between items-center  text-gray-600">
+                <div className="flex justify-between items-center  text-gray-600 mb-3">
                     <span className="text-blue-500 font-semibold">$ 456 - 800/month</span>
                     <span>June 2025</span>
-                </div>
+             </div>
                 {
                     Apply &&
 

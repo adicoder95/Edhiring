@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import JobCard_image from '../assets/jobCard_image.svg';
 import heart_icon from '../assets/heart_icon.svg';
 import location_icon from '../assets/location_icon.svg';

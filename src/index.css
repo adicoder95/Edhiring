@@ -5,6 +5,7 @@
 
 *{
     overflow-x: hidden;
+    scrollbar-width:none;
 }
 .custom-dropdown {
     background-color: #f9f9f9; /* Light background */
@@ -14,7 +15,7 @@
 
     color:#296569;
     font-weight: 700;
-    padding-right: 3px;
+    padding-right: 10px;
     padding-left: 3px;
     
   }
@@ -44,3 +45,34 @@
     /* display: none; */
     background-color: #296569;
   }
+
+  .select_category{
+    outline: none;
+    height: 50px;
+    line-height: 50px;
+    padding:0px 20px 0px 20px;
+  }
+
+
+  .custom-select::before,
+.custom-select::after {
+  --size: 0.3rem;
+  position: absolute;
+  content: "";
+  right: 1rem;
+  pointer-events: none;
+}
+
+.custom-select::before {
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-bottom: var(--size) solid black;
+  top: 40%;
+}
+
+.custom-select::after {
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-top: var(--size) solid black;
+  top: 55%;
+}

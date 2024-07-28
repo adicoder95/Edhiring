@@ -1,4 +1,4 @@
-import React from 'react'
+// import React from 'react'
 import image from '../assets/blog_image.svg'
 import Blog from './Blog'
 

@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,7 +11,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-// import faker from 'faker';
+// import { faker } from '@faker-js/faker';
 
 ChartJS.register(
   CategoryScale,
@@ -46,8 +46,9 @@ export const options = {
   },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June'];
-const d = [200,400,600,800,1000,1200];
+const labels = [ '','January', 'February', 'March', 'April', 'May', 'June'];
+const d = [0,2,5,9,8,11,13,15];
+// const d2=labels.map(() => faker.datatype.number({ min: 0, max: 14 }))
 
 export const data = {
   labels,

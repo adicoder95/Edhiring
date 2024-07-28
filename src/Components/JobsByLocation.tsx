@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import JobLocationCard from './JobLocationCard';
 import image from '../assets/location_image.svg'
 

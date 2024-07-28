@@ -1,14 +1,15 @@
-import React from 'react';
-import { Sidebar } from '../Components/Sidebar';
+// import React from 'react';
+// import { Sidebar } from '../Components/Sidebar';
 // import { Graph } from '../Components/graph';
 import job_active from '../assets/job_active_cion.svg';
 import { Chart } from '../Components/Chart';
 import resume_icon from '../assets/resume_icon.svg';
 import profile_pic from '../assets/Profile_pic.svg';
 import heart from '../assets/heart_icon.svg';
-import location_icon from '../assets/location_icon.svg';
-import job_icon from '../assets/jobCard_image.svg';
+// import location_icon from '../assets/location_icon.svg';
+// import job_icon from '../assets/jobCard_image.svg';
 import BigJobCard from '../Components/BigJobCard';
+import { Link } from 'react-router-dom';
 
 export default function Dashboard_page() {
     
@@ -58,7 +59,10 @@ export default function Dashboard_page() {
                         </div>
 
                         <div>
-                            <button className='py-[10px] px-7 text-sm bg-buttons rounded-[4px] text-white'> Complete Profile</button>
+                            <Link to="/p" >
+                                <button className='py-[10px] px-7 text-sm bg-buttons rounded-[4px] text-white'> Complete Profile</button>
+                            
+                            </Link>
                         </div>
                     </div>
 
@@ -101,7 +105,7 @@ export default function Dashboard_page() {
                 
                 
             <BigJobCard/>
-            <BigJobCard Apply/>
+            <BigJobCard/>
             <BigJobCard/>
             <BigJobCard/>
             </div>

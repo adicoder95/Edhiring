@@ -16,18 +16,8 @@ const Navbar = () => {
                 <img src={logo} alt="logo"  />
             </a>
           </div>
-          <div className="flex space-x-10 mx-auto font-semibold text-sm ">
-            <a href="#" className="text-gray-900 hover:bg-gray-200 hover:text-black px-3 py-2 rounded-md text-sm font-medium ml-20">
-              Home
-            </a>
-            <a href="#" className="text-gray-900 hover:bg-gray-200 hover:text-black px-3 py-2 rounded-md text-sm font-medium">
-              About Us
-            </a>
-            <a href="#" className="text-gray-900 hover:bg-gray-200 hover:text-black px-3 py-2 rounded-md text-sm font-medium">
-              Hiring features
-            </a>
-          </div>
-          <div className="flex items-center space-x-10 me-[65px]">
+          
+          <div className="flex items-center space-x-10 me-[40px]">
             {/* <SignUpModal/> */}
             <button className="bg-signup  text-white  py-2 px-4 rounded-md " onClick={() => setSignupModal && setSignupModal(true)}>  
               Sign Up

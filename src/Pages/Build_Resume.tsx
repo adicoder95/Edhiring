@@ -1,4 +1,4 @@
-import React from 'react'
+// import React from 'react'
 import buildresume_pic from '../assets/buildresume_pic.svg'
 import rightArrow_icon from '../assets/RightArrow_icon.svg'
 import DemoResume_pic from '../assets/DemoResume_Pic.svg'
@@ -32,14 +32,27 @@ export default function Build_Resume() {
             </div>
             
         </div>
-        <div className='flex flex-col mt-7 font-semibold text-buttons '>
-            <p className='text-2xl mb-4'> How it works ?</p>
-            <div className='flex py-6 px-6'>
-                <img src={DemoResume_pic} alt="" />
+            <h1 className='text-2xl mb-4'> How it works ?</h1>
+        <div className='flex  mt-7 font-semibold text-buttons '>
+            <div className='flex  justify-center h-[360px] w-[40%] ms-20'>
+                <img src={DemoResume_pic} alt=""  />
                 
             </div>
-            <div className='flex-grow'>
-                
+            <div className='flex-grow flex justify-center items-center'>
+
+                <div className='w-1/2 min-w-[503px] flex flex-col gap-12'>
+                <div>
+                    <h1 className='text-[24px]'>Lorem ipsum dolor sit amet consectetur.</h1>
+                    <p className='text-[16px]'>Lorem ipsum dolor sit amet consectetur. Eget sit at amet consequat et ac blandit elit. Pulvinar a ut ut elementum at erat. Eget sit at amet consequat et ac blandit elit. Pulvinar a ut ut elementum at erat.</p>
+
+                </div>
+                <div>
+                    <h1 className='text-[24px]'>Lorem ipsum dolor sit amet consectetur.</h1>
+                    <p className='text-[16px]'>Lorem ipsum dolor sit amet consectetur. Eget sit at amet consequat et ac blandit elit. Pulvinar a ut ut elementum at erat. Eget sit at amet consequat et ac blandit elit. Pulvinar a ut ut elementum at erat.</p>
+
+                </div>
+                </div>
+                    
             </div>
 
         </div>

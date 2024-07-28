@@ -10,10 +10,40 @@ type contextstate = {
   setSignupModal: (value: boolean) => void;
 };
 
+
+type LoginCredentials = {
+  email: string;
+  password: string;
+};
+
 const LoginModal: React.FC = () => {
   const context = useContext(Context);
   const [visible, setVisible] = useState(false);
   const { setloginModal,setSignupModal } = context as contextstate;
+
+
+  const [LoginCredentials, setLoginCredentials] = useState<LoginCredentials>({
+    email: '',
+    password: '',
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLoginCredentials({ ...LoginCredentials, [name]: value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('Login credentials:', LoginCredentials);
+    // try {
+    //   const response = await axios.post('YOUR_API_ENDPOINT', loginCredentials);
+    //   console.log('Login successful:', response.data);
+    //   // Handle successful login, e.g., redirect to dashboard
+    // } catch (error) {
+    //   console.error('Login failed:', error);
+    //   // Handle login error
+    // }
+  };
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -40,13 +70,27 @@ const LoginModal: React.FC = () => {
       <div ref={modalRef} className="bg-white rounded-[20px] shadow-lg w-[622px] px-[60px] py-[40px]">
         <h2 className="text-3xl font-bold text-landingfont mb-4 h-10">Login</h2>
         <p className="mb-6">Lorem ipsum dolor sit amet consectetur.</p>
-        <form>
+        <form onSubmit={handleSubmit}>
           <p className='text-cyan1 mb-3 ms-2'>Email</p>
-          <input type="email" placeholder="Email" className="w-full border border-gray-300 rounded py-2 px-4 mb-4" />
-          <p className='text-cyan1 mb-3 ms-2'>Password</p>
-          <input type="password" placeholder="Password" className="w-full border border-gray-300 rounded py-2 px-4 mb-4" />
+          <input
+            type="email"
+            name="email"
+            value={LoginCredentials.email}
+            onChange={handleInputChange}
+            placeholder="Email"
+            className="w-full border border-gray-300 rounded py-2 px-4 mb-4"
+          />
+          <p className='text-cyan1 mb-3 ms-2'>Password</p>  
+          <input
+            type="email"
+            name="email"
+            value={LoginCredentials.email}
+            onChange={handleInputChange}
+            placeholder="Email"
+            className="w-full border border-gray-300 rounded py-2 px-4 mb-4"
+          />
           <div className="flex items-center mb-4 text-cyan1">
-            <input type="checkbox" id="terms" className="mr-2" />
+          
             <label htmlFor="terms" className="text-sm">
               I've read and agree with Terms of Service and our Privacy Policy
             </label>

@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import search_icon from '../assets/search_icon.svg';
 import location_icon from '../assets/location_icon.svg';
 

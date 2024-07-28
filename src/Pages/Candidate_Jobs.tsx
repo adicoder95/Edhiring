@@ -1,13 +1,13 @@
-import React from 'react'
+// import React from 'react'
 import AI_PIC from '../assets/AI_Logo_pic.svg'
 import BigJobCard from '../Components/BigJobCard'
-import dropdown from '../assets/Dropdown_tick.svg'
+// import dropdown from '../assets/Dropdown_tick.svg'
 import { useState } from 'react'
 
 export default function Candidate_Jobs() {
     const [openfilter, setopenfilter] = useState(false);
     return (
-        <main className='flex-1 ml-20 transition-all duration-300 w-[90%]'>
+        <main className='flex-1 ml-20   transition-all duration-300 w-[90%]'>
             <div className="flex items-center space-x-4 p-4 gap-8 bg-white rounded shadow-md mt-3">
                 <div className='flex'>
                     <button className="text-blue-900 hover:text-blue-700">
