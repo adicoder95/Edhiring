@@ -1,11 +1,12 @@
 const express = require("express");
-const app = express();
 const http = require("http");
-const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server);
 const mongoose = require('mongoose');
-const Message = require('./models/message');
+const Room = require('./models/room');
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
 // Middleware setup
 const cloudinary = require('cloudinary').v2;
@@ -67,20 +68,33 @@ io.on('connection', (socket) => {
         console.log(`User joined room: ${roomId}`);
 
         // Retrieve and send past messages for the room
-        const messages = await Message.find({ roomId }).sort({ timestamp: 1 });
-        socket.emit('loadMessages', messages);
+        let room = await Room.findOne({ roomId });
+        if (!room) {
+            room = new Room({ roomId, messages: [] });
+            await room.save();
+        }
+
+        socket.emit('loadMessages', room.messages);
     });
 
     // Listen for private messages
     socket.on('privateMessage', async ({ roomId, sender, message }) => {
-        console.log(`Message received in room ${roomId}: ${message}`);
-        
-        // Save the message to the database
-        const newMessage = new Message({ roomId, sender, message });
-        await newMessage.save();
+        message = message.trim(); // Ensure message is trimmed
+        if (message) {
+            console.log(`Message received in room ${roomId}: ${message}`);
+            
+            // Save the message to the database
+            const newMessage = { sender, message, timestamp: new Date() };
+            await Room.updateOne(
+                { roomId },
+                { $push: { messages: newMessage } }
+            );
 
-        // Emit the message only to the specified room
-        io.to(roomId).emit('privateMessage', newMessage);
+            // Emit the message only to the specified room
+            io.to(roomId).emit('privateMessage', newMessage);
+        } else {
+            console.log(`Empty message from ${sender} in room ${roomId}`);
+        }
     });
 
     // Handle disconnections
