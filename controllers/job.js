@@ -38,18 +38,29 @@ exports.createJob = async (req, res, next) => {
 };
 
 
-//single job
+// Fetch job details and increment views
 exports.singleJob = async (req, res, next) => {
     try {
         const job = await Job.findById(req.params.id);
+        if (!job) {
+            return res.status(404).json({
+                success: false,
+                message: 'Job not found'
+            });
+        }
+
+        // Increment views
+        job.views += 1;
+        await job.save();
+
         res.status(200).json({
             success: true,
             job
-        })
+        });
     } catch (error) {
         next(error);
     }
-}
+};
 
 
 //update job by id.
