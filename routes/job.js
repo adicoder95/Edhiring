@@ -5,7 +5,7 @@ const { isAuthenticated, protect, isCandidate, isEmployer, isAdmin } = require('
 
 // Jobs routes
 router.post('/create', isAuthenticated, isEmployer, createJob);
-router.get('/job/:id', protect, isEmployer, singleJob);
+router.get('/job/:id', singleJob);
 router.put('/job/update/:id',protect, isEmployer, updateJob);
 router.get('/jobs/show', showJobs);
 
