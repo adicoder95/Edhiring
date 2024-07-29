@@ -43,6 +43,14 @@ const jobSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', 
     },
+    views: {
+        type: Number,
+        default: 0
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
 }, { timestamps: true })
 
 module.exports = mongoose.model("Job", jobSchema);
