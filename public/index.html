@@ -30,15 +30,23 @@
     let sender = '';
 
     joinRoomButton.addEventListener('click', () => {
-      currentRoomId = roomIdInput.value;
-      sender = senderInput.value;
-      socket.emit('joinRoom', { roomId: currentRoomId });
+      currentRoomId = roomIdInput.value.trim();
+      sender = senderInput.value.trim();
+      if (currentRoomId && sender) {
+        socket.emit('joinRoom', { roomId: currentRoomId });
+      } else {
+        alert('Please enter both Room ID and your name.');
+      }
     });
 
     sendButton.addEventListener('click', () => {
-      const message = messageInput.value;
-      socket.emit('privateMessage', { roomId: currentRoomId, sender, message });
-      messageInput.value = '';
+      const message = messageInput.value.trim();
+      if (message) {
+        socket.emit('privateMessage', { roomId: currentRoomId, sender, message });
+        messageInput.value = '';
+      } else {
+        alert('Message cannot be empty.');
+      }
     });
 
     socket.on('privateMessage', (msg) => {
