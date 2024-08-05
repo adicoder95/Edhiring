@@ -4,7 +4,7 @@ import key_skills_pic from '../../assets/key_skills_pic.svg'
 
 export default function Key_Skills() {
     return (
-        <div className='border rounded-lg p-6 mr-14 shadow-lg shadow-gray-200 mt-7'>
+        <div className='border rounded-lg p-6  shadow-lg shadow-gray-200 mt-7'>
             <h4 className="text-lg font-semibold text-buttons mb-6">Key Skills</h4>
             <div className='w-full flex justify-around'>
                 <div className='flex-grow'>

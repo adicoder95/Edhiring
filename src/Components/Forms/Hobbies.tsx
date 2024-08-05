@@ -2,7 +2,7 @@
 
 export default function Hobbies() {
   return (
-    <div className='border rounded-lg p-6 mr-14 shadow-lg shadow-gray-200 mt-7'>
+    <div className='border rounded-lg p-6  shadow-lg shadow-gray-200 mt-7'>
             <h4 className="text-xl font-semibold text-buttons mb-6">Hobbies</h4>
             <div>
                 <p className='font-semibold text-buttons mb-6'>Add Hobbies</p>

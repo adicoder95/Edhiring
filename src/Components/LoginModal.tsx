@@ -3,11 +3,15 @@ import 'tailwindcss/tailwind.css';
 // import { ModalContext } from '../App';
 import { Context } from './ContextProvide';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 
 type contextstate = {
   setloginModal: (value: boolean) => void;
   setSignupModal: (value: boolean) => void;
+  user: Object;
+  setUser: (value: Object) => void;
+  setLoggedIn: (value: boolean) => void;
 };
 
 
@@ -19,7 +23,7 @@ type LoginCredentials = {
 const LoginModal: React.FC = () => {
   const context = useContext(Context);
   const [visible, setVisible] = useState(false);
-  const { setloginModal,setSignupModal } = context as contextstate;
+  const { setloginModal,setSignupModal,setUser,setLoggedIn } = context as contextstate;
 
 
   const [LoginCredentials, setLoginCredentials] = useState<LoginCredentials>({
@@ -35,14 +39,28 @@ const LoginModal: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Login credentials:', LoginCredentials);
-    // try {
-    //   const response = await axios.post('YOUR_API_ENDPOINT', loginCredentials);
-    //   console.log('Login successful:', response.data);
-    //   // Handle successful login, e.g., redirect to dashboard
-    // } catch (error) {
-    //   console.error('Login failed:', error);
-    //   // Handle login error
-    // }
+    try {
+      const response = await axios.post('http://localhost:3000/api/v1/auth/login', LoginCredentials);
+      console.log('Login successful:', response.data);
+      if(response.data.success){
+        setLoggedIn(true);
+        setUser(response.data.user);
+        localStorage.setItem('token', response.data.token);
+        setVisible(false);
+        setTimeout(() => setloginModal(false), 300);
+      }
+      else{
+        alert('Invalid credentials');
+        setUser({});
+        setLoggedIn(false);
+        localStorage.removeItem('token');
+      }
+      // localStorage.setItem('role', JSON.stringify(response.data.user));
+      // Handle successful login, e.g., redirect to dashboard
+    } catch (error) {
+      console.error('Login failed:', error);
+      // Handle login error
+    }
   };
 
   const modalRef = useRef<HTMLDivElement>(null);
@@ -82,9 +100,9 @@ const LoginModal: React.FC = () => {
           />
           <p className='text-cyan1 mb-3 ms-2'>Password</p>  
           <input
-            type="email"
-            name="email"
-            value={LoginCredentials.email}
+            type="password"
+            name="password"
+            value={LoginCredentials.password}
             onChange={handleInputChange}
             placeholder="Email"
             className="w-full border border-gray-300 rounded py-2 px-4 mb-4"

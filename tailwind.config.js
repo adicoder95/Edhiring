@@ -16,7 +16,7 @@ export default {
         pr:"#3B848B",
         sr:"#317378",
         tr:"#296569",
-        grey: "#D9D9D9",
+        grey: "#A7AEBF",
         error: "#F25050",
         ternary: "#DB6A93",
         sidebar_font:"#A7AEBF",

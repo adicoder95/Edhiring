@@ -1,4 +1,4 @@
-import React from 'react'
+
 import key_skills_pic from '../assets/key_skills_pic.svg';
 
 import empty_profile from '../assets/Profile_pic_Empty.svg'

@@ -6,7 +6,7 @@ import 'react-phone-input-2/lib/style.css'
 
 export default function Personal_details() {
   return (
-    <div className="border rounded-lg p-6 mr-14 shadow-lg shadow-gray-200">
+    <div className="border rounded-lg p-6 mr-14 shadow-lg shadow-gray-200 w-full">
           <h4 className="text-lg font-semibold text-gray-700 mb-6">Personal Details</h4>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">

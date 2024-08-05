@@ -22,7 +22,7 @@ const Work_Experience: React.FC<WorkExperienceProps> = ({ index, profile, setPro
   };
 
   return (
-    <div className=' rounded-lg p-6 mr-14 '>
+    <div className='rounded-lg p-6  '>
       <h3 className='text-buttons font-semibold text-[20px]'> Work Experience</h3>
       <form action="">
         <div className='grid grid-cols-3 mt-7 gap-x-4'>

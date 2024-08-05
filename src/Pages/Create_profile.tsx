@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import Personal_details from '../Components/Forms/Personal_details'
 import Key_Skills from '../Components/Forms/Key_Skills';
 import Work_Experience from '../Components/Forms/Work_Experience';
@@ -172,39 +172,42 @@ export default function Create_profile() {
     <main className='flex-1 ml-20 transition-all duration-300'>
       <div className="bg-white p-8 rounded-lg shadow-md  mx-auto mt-8">
         <h3 className="text-xl font-semibold text-gray-900 mb-4">Create Profile</h3>
-        <Personal_details />
-        <Key_Skills />
-        <div className='shadow-lg shadow-gray-200 mt-7 rounded-lg border'>
-          {profile.WorkExperience.map((_, index) => (
-            <Work_Experience key={index} index={index} profile={profile} setProfile={setProfile} />
-          ))}
-          <button onClick={addWorkExperience} className="bg-blue-500 text-white p-2 rounded mt-4 ml-10 mb-16">+ Add Work Experience</button>
+        <div className='mx-6 '>
+          <Personal_details />
+          <Key_Skills />
+          <div className='shadow-lg shadow-gray-200 mt-7 rounded-lg border'>
+            {profile.WorkExperience.map((_, index) => (
+              <Work_Experience key={index} index={index} profile={profile} setProfile={setProfile} />
+            ))}
+            <button onClick={addWorkExperience} className="bg-blue-500 text-white p-2 rounded mt-4 ml-10 mb-16">+ Add Work Experience</button>
+
+          </div>
+          <div className='shadow-lg shadow-gray-200 mt-7 rounded-lg border'>
+            {profile.Education.map((_, index) => (
+              <Education key={index} index={index} profile={profile} setProfile={setProfile} />
+            ))}
+            <button onClick={addEducation} className="bg-blue-500 text-white p-2 rounded mt-4 ml-10 mb-16">+ Add Education</button>
+
+          </div>
+
+          <div className='shadow-lg shadow-gray-200 mt-7 rounded-lg border'>
+            {profile.Language.map((_, index) => (
+              <Language key={index} index={index} profile={profile} setProfile={setProfile} />
+            ))}
+            <button onClick={addLanguage} className="bg-blue-500 text-white p-2 rounded mt-4 ml-10 mb-16">+ Add Language</button>
+
+          </div>
+
+          <div className='shadow-lg shadow-gray-200 mt-7 rounded-lg border'>
+            {profile.Certification.map((_, index) => (
+              <Certification key={index} index={index} profile={profile} setProfile={setProfile} />
+            ))}
+            <button onClick={addCertification} className="bg-blue-500 text-white p-2 rounded mt-4 ml-10 mb-16">+ Add Certification</button>
+
+          </div>
+          <Hobbies />
 
         </div>
-        <div className='shadow-lg shadow-gray-200 mt-7 rounded-lg border'>
-          {profile.Education.map((_, index) => (
-            <Education key={index} index={index} profile={profile} setProfile={setProfile} />
-          ))}
-          <button onClick={addEducation} className="bg-blue-500 text-white p-2 rounded mt-4 ml-10 mb-16">+ Add Education</button>
-
-        </div>
-
-        <div className='shadow-lg shadow-gray-200 mt-7 rounded-lg border'>
-          {profile.Language.map((_, index) => (
-            <Language key={index} index={index} profile={profile} setProfile={setProfile} />
-          ))}
-          <button onClick={addLanguage} className="bg-blue-500 text-white p-2 rounded mt-4 ml-10 mb-16">+ Add Language</button>
-
-        </div>
-
-        <div className='shadow-lg shadow-gray-200 mt-7 rounded-lg border'>
-          {profile.Certification.map((_, index) => (
-            <Certification key={index} index={index} profile={profile} setProfile={setProfile} />
-          ))}
-          <button onClick={addCertification} className="bg-blue-500 text-white p-2 rounded mt-4 ml-10 mb-16">+ Add Certification</button>
-
-        </div>
-        <Hobbies />
         <button onClick={handleSubmit} className="bg-green-500 text-white p-2 rounded mt-4 ml-10 mb-16">Submit Profile</button>
       </div>
     </main>

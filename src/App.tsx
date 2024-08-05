@@ -13,14 +13,24 @@ import MYprofile from './Pages/MYprofile';
 import EmployerCreate_profile from './Pages/EmployerCreate_Profile';
 import Employer_PostJob from './Pages/Employer_PostJob';
 import InstituteProfile from './Pages/InstituteProfile';
+import SelectCandidate from './Pages/SelectCandidate';
+import CandidateApply from './Pages/CandidateApply';
 import './App.css';
+import { useEffect} from 'react';
 
 function MainContent() {
+  // const context=useContext(ContextProvide);
   const location = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  } 
+  , [location]
+  
+);
   return (
     <div className="w-screen overflow-x-hidden flex  ">
-      {location.pathname !== '/' && location.pathname!='/MYprofile' && <Sidebar />}
-      <div className={`flex-1 ${location.pathname !== '/' && location.pathname!='/MYprofile' ? 'ml-20' : ''}`}>
+      {location.pathname !== '/' && location.pathname!='/MYprofile' && location.pathname!="/SelectCandidate" && <Sidebar />}
+      <div className={`flex-1 ${location.pathname !== '/' && location.pathname!='/MYprofile'  && location.pathname!="/SelectCandidate" ? 'ml-20' : ''}`}>
         <Routes>
           <Route path="/" element={<Landing_Page />} />
           <Route path="/d" element={<Dashboard_page />} />
@@ -32,6 +42,8 @@ function MainContent() {
           <Route path="/EmployerCreateProfile" element={<EmployerCreate_profile/>}/> 
           <Route path="/EmployerPostJob" element={<Employer_PostJob/>}/>
           <Route path="/InstituteProfile" element={<InstituteProfile/>}/>
+          <Route path="/SelectCandidate" element={<SelectCandidate/>}/>
+          <Route path="/CandidateApply" element={<CandidateApply/>}/>
           
         </Routes>
       </div>
