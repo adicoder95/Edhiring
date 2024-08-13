@@ -22,6 +22,10 @@ const employerProfileSchema = new mongoose.Schema({
         // required: true,
         // trim: true,
     },
+    instituteType: {
+        type: String,
+        default:'Not specified',
+    },
     instituteName: {
         type: String,
         // required: true,
@@ -77,6 +81,14 @@ const employerProfileSchema = new mongoose.Schema({
     fullName: {
         type: String,
         // required: true
+    },
+    rating:{
+        type: String,
+        default: 'No details provided',
+    },
+    moreReviews:{
+        type:String,
+        default: 'No details provided',
     }
 });
 
