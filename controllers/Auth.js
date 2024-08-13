@@ -240,3 +240,31 @@ exports.sendotp = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message })
   }
 }
+
+
+exports.auth = async (req, res) => {
+  // Extracting JWT from request cookies, body, or header
+  const token =
+    req.cookies.token ||
+    req.body.token ||
+    req.header('Authorization').replace('Bearer ', '');
+
+  // If JWT is missing, return 401 Unauthorized response
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Token Missing' });
+  }
+
+  // Verifying the JWT using the secret key stored in environment variables
+  const decode = await jwt.verify(token, process.env.JWT_SECRET);
+
+  if (!decode) {
+    // If JWT verification fails, return 401 Unauthorized response
+    return res.status(401).json({ success: false, message: 'Token is invalid' });
+  }
+
+  // Storing the decoded JWT payload in the request object for further use
+  req.user = decode;
+
+  // Return success response if token is valid
+  return res.status(200).json({ success: true, message: 'Token is valid', user: req.user ,accountType:req.user.accountType});
+};
