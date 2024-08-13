@@ -7,15 +7,10 @@ const {
   login,
   signup,
   sendotp,
+  auth,
 } = require("../controllers/Auth")
 
-const { auth } = require("../middlewares/auth")
-
-// Routes for Login, Signup, and Authentication
-
-// ********************************************************************************************************
-//                                      Authentication routes
-// ********************************************************************************************************
+// const { auth } = require("../middlewares/auth")
 
 // Route for user login
 router.post("/login", login)
@@ -25,6 +20,9 @@ router.post("/signup", signup)
 
 // Route for sending OTP to the user's email
 router.post("/sendotp", sendotp)
+
+// Route for token validation
+router.post('/validateToken', auth);
 
 // Export the router for use in the main application
 module.exports = router
