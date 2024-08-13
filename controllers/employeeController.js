@@ -45,7 +45,7 @@ exports.updateEmployerProfile = async (req, res) => {
       const employerProfileId = user.additionalDetails;
       let logoPic = req.files.logo;
       let coverPic = req.files.coverPhoto;
-      let { email, contact, instituteName, institueContact, instituteEmail, website, foundingDate, socialNetwork, about, currentCity, pincode, address1, address2, address3, fullName } = req.body;
+      let { email, contact, instituteType, instituteName, institueContact, instituteEmail, website, foundingDate, socialNetwork, about, currentCity, pincode, address1, address2, address3, fullName, rating, moreReviews } = req.body;
 
       const image1 = await uploadImageToCloudinary(
         logoPic,
@@ -64,6 +64,7 @@ exports.updateEmployerProfile = async (req, res) => {
       const updateData = {
           email,
           contact,
+          instituteType,
           instituteName,
           institueContact,
           instituteEmail,
@@ -77,6 +78,8 @@ exports.updateEmployerProfile = async (req, res) => {
           address3,
           currentCity,
           fullName,
+          rating,
+          moreReviews,
       };
 
       const updatedProfile1 = await Employer.findByIdAndUpdate(
@@ -117,3 +120,21 @@ exports.updateEmployerProfile = async (req, res) => {
 };
 
 
+exports.getInstituteInfo = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).populate('additionalDetails');
+            // .exec();
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        
+
+        console.log('this is the details for a perticular institute :', user.additionalDetails);
+        res.status(200).json({ success: true, coverPic: user.additionalDetails.coverPhoto, institutetype:user.additionalDetails.instituteType ,instituteName:user.additionalDetails.instituteName, instituteLocation:user.additionalDetails.currentCity, About:user.additionalDetails.about, instituteRating:user.additionalDetails.rating, instituteReview:user.additionalDetails.moreReviews});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
