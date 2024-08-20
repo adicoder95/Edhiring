@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getRecentActivities, toggleStarActivity, getStarredActivities } = require('../controllers/activityController');
-const { isAuthenticated } = require('../middlewares/auth');
+const { isAuthenticated ,auth} = require('../middlewares/auth');
 
 router.get('/activities', auth, isAuthenticated, getRecentActivities);
 router.put('/activities/:id/star', isAuthenticated, toggleStarActivity);
