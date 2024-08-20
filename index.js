@@ -25,6 +25,7 @@ const messageRoutes = require('./routes/message');
 const employerRoutes = require('./routes/employeeRoutes');
 const trackingRoute = require('./routes/tracking'); 
 const adminRoute = require('./routes/adminRoutes'); 
+const activityRoute = require('./routes/activityRoutes'); 
 
 const database = require("./config/database");
 
@@ -123,6 +124,7 @@ app.use("/api", jobTypeRoutes);
 app.use('/api/v1/employer', employerRoutes);
 app.use('/api', trackingRoute);
 app.use('/api/v1/admin', adminRoute);
+app.use('/api/v1', activityRoute);
 
 // Default route to serve the index.html
 app.get("/", (req, res) => {
