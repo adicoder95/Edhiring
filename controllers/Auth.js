@@ -65,7 +65,7 @@ exports.signup = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10)
-    console.log("hs "+hashedPassword);
+    console.log("hs ");
 
     // Create the Additional Profile For User
     let additionalDetails;
@@ -75,7 +75,7 @@ exports.signup = async (req, res) => {
         dateOfBirth: new Date('2000-01-01'),
         about: 'No details provided',
       });
-    } else if (accountType === 'Employer' || accountType === 'Admin') {
+    } else if (accountType === 'Employer') {
       console.log('generating Employer');
       additionalDetails = await employer.create({
         logo: 'logo.png',
@@ -100,17 +100,29 @@ exports.signup = async (req, res) => {
     }
     console.log('employer created');
 
-
-    const user = await User.create({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      contact,
-      accountType,
-      additionalDetails: additionalDetails._id,
-      image: "",
-    })
+    let user;
+    if(accountType=='Admin'){
+        user = await User.create({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        contact,
+        accountType,
+        image: "",
+      })
+    } else{
+        user = await User.create({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        contact,
+        accountType,
+        additionalDetails: additionalDetails._id,
+        image: "",
+      })
+    }
 
     return res.status(200).json({
       success: true,
