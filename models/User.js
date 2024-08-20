@@ -43,8 +43,10 @@ try {
         try {
             if (this.accountType === 'Candidate') {
                 this.additionalDetails = await mongoose.model('Candidate').findOne({ email: this.email });
-            } else if (this.accountType === 'Employer' || this.accountType === 'Admin') {
+            } else if (this.accountType === 'Employer') {
                 this.additionalDetails = await mongoose.model('Employer').findOne({ email: this.email });
+            } else if (this.accountType === 'Admin') {
+                this.additionalDetails = '';
             }
             next();
         } catch (error) {
