@@ -123,7 +123,6 @@ exports.signup = async (req, res) => {
         image: "",
       })
     }
-
     return res.status(200).json({
       success: true,
       user,
@@ -175,7 +174,7 @@ exports.login = async (req, res) => {
           expiresIn: "24h",
         }
       )
-
+      
       // Save token to user document in database
       user.token = token
       user.password = undefined
@@ -184,10 +183,15 @@ exports.login = async (req, res) => {
         expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         httpOnly: true,
       }
+      const additionalDetails=user.additionalDetails
+      const candidate = await Candidate.findById(additionalDetails);
+      console.log("candidate testing: " + candidate)
+      const profilePic = candidate.personalDetails.profilePic;
       res.cookie("token", token, options).status(200).json({
         success: true,
         token,
         user,
+        profilePic,
         message: `User Login Success`,
       })
     } else {
