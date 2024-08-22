@@ -12,7 +12,7 @@ const io = new Server(server);
 const cloudinary = require('cloudinary').v2;
 const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser");
-const cors = require("cors");
+// const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
 
@@ -40,10 +40,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-    // origin: "http://localhost:10000", // Frontend
-    credentials: true,
-}));
+// app.use(cors({
+//     // origin: "http://localhost:10000", // Frontend
+//     credentials: true,
+// }));
 app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp",
