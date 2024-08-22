@@ -109,6 +109,7 @@ exports.signup = async (req, res) => {
         password: hashedPassword,
         contact,
         accountType,
+        additionalDetails: '',
         image: "",
       })
     } else{
@@ -184,14 +185,13 @@ exports.login = async (req, res) => {
         httpOnly: true,
       }
       const additionalDetails=user.additionalDetails
-      const candidate = await Candidate.findById(additionalDetails);
-      console.log("candidate testing: " + candidate)
-      const profilePic = candidate.personalDetails.profilePic;
+      const Profile = await Candidate.findById(additionalDetails);
+      // console.log("candidate testing: " + candidate)
       res.cookie("token", token, options).status(200).json({
         success: true,
         token,
         user,
-        profilePic,
+        Profile,
         message: `User Login Success`,
       })
     } else {
