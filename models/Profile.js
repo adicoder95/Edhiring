@@ -47,9 +47,12 @@ const profileSchema = new mongoose.Schema({
 		current_City: String,
 		experience: {
 		  type: String,
-		  enum: ['Fresher', 'Experience'],
+		  enum: ['Fresher', 'Experienced'],
 		},
-		experience_time: Date,
+		experience_time: {
+			years:{type:Number,default:0},
+			months:{type:Number,default:0},
+		},
 		resume: String, // Assuming the file path or URL will be stored as a string
 		job_Role: String,
 	  },
@@ -62,7 +65,6 @@ const profileSchema = new mongoose.Schema({
 		contact_No: '0000000000',
 		current_City: 'Unknown',
 		experience: 'Fresher',
-		experience_time: new Date('2000-01-01'),
 		resume: 'url',
 		job_Role: '',
 	  },
@@ -74,7 +76,7 @@ const profileSchema = new mongoose.Schema({
 		  designation: String,
 		  working: {
 			type: String,
-			enum: ['yes'],
+			enum: ['yes','no'],
 		  },
 		  worked_Since: Date,
 		  worked_till: Date,
