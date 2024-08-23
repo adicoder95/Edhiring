@@ -258,29 +258,69 @@ exports.sendotp = async (req, res) => {
 }
 
 
+// const jwt = require('jsonwebtoken'); // Ensure you have this import at the top
+
 exports.auth = async (req, res) => {
   // Extracting JWT from request cookies, body, or header
   const token =
     req.cookies.token ||
     req.body.token ||
-    req.header('Authorization').replace('Bearer ', '');
+    req.header('Authorization')?.replace('Bearer ', '');
 
   // If JWT is missing, return 401 Unauthorized response
   if (!token) {
     return res.status(401).json({ success: false, message: 'Token Missing' });
   }
 
-  // Verifying the JWT using the secret key stored in environment variables
-  const decode = await jwt.verify(token, process.env.JWT_SECRET);
+  try {
+    // Verifying the JWT using the secret key stored in environment variables
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
 
-  if (!decode) {
+    // Storing the decoded JWT payload in the request object for further use
+    req.user = decode;
+
+    // Return success response if token is valid
+    return res.status(200).json({ success: true, message: 'Token is valid', user: req.user, accountType: req.user.accountType });
+  } catch (error) {
     // If JWT verification fails, return 401 Unauthorized response
-    return res.status(401).json({ success: false, message: 'Token is invalid' });
+    console.error('JWT Verification Error:', error);
+    return res.status(401).json({ success: false, message: 'Token is invalid or expired' });
+  }
+};
+
+
+
+exports.getAuthProfile = async (req, res) => {
+  // Extracting JWT from request cookies, body, or header
+  const token =
+    req.cookies.token ||
+    req.body.token ||
+    req.header('Authorization')?.replace('Bearer ', '');
+
+  // If JWT is missing, return 401 Unauthorized response
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Token Missing' });
   }
 
-  // Storing the decoded JWT payload in the request object for further use
-  req.user = decode;
+  try {
+    // Verifying the JWT using the secret key stored in environment variables
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
 
-  // Return success response if token is valid
-  return res.status(200).json({ success: true, message: 'Token is valid', user: req.user ,accountType:req.user.accountType});
+    // Storing the decoded JWT payload in the request object for further use
+    req.user = decode;
+
+    // Fetch the user and populate additionalDetails
+    const user = await User.findById(req.user.id).populate('additionalDetails');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Return the user's profile
+    res.status(200).json({ success: true, candidate: user.additionalDetails });
+
+  } catch (error) {
+    // If JWT verification fails or any other error occurs, return 401 Unauthorized response
+    console.error('JWT Verification Error:', error);
+    return res.status(401).json({ success: false, message: 'Token is invalid or expired' });
+  }
 };
