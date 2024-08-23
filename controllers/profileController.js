@@ -20,8 +20,6 @@ exports.getProfile = async (req, res) => {
   }
 };
 
-
-
 exports.updateProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate('additionalDetails');
@@ -36,7 +34,11 @@ exports.updateProfile = async (req, res) => {
 
     // Handle personalDetails update
     if (req.body.personalDetails) {
-      updateData.personalDetails = JSON.parse(req.body.personalDetails);
+      // Merge existing personalDetails with the new data
+      updateData.personalDetails = {
+        ...user.additionalDetails.personalDetails.toObject(), // Convert to plain object if using Mongoose
+        ...req.body.personalDetails // Update with new details
+      };
 
       // Update profile picture if provided
       if (req.files && req.files.profilePic) {
@@ -61,34 +63,29 @@ exports.updateProfile = async (req, res) => {
       }
     }
 
-    // Handle workExperience update
+    // Handle other updates (workExperience, keySkills, etc.) similarly
     if (req.body.workExperience) {
-      updateData.workExperience = JSON.parse(req.body.workExperience);
+      updateData.workExperience = req.body.workExperience; // No need to parse
     }
 
-    // Handle keySkills update
     if (req.body.keySkills) {
-      updateData.keySkills = JSON.parse(req.body.keySkills);
+      updateData.keySkills = req.body.keySkills; // No need to parse
     }
 
-    // Handle education update
     if (req.body.education) {
-      updateData.education = JSON.parse(req.body.education);
+      updateData.education = req.body.education; // No need to parse
     }
 
-    // Handle certification update
     if (req.body.certification) {
-      updateData.certification = JSON.parse(req.body.certification);
+      updateData.certification = req.body.certification; // No need to parse
     }
 
-    // Handle language update
     if (req.body.language) {
-      updateData.language = JSON.parse(req.body.language);
+      updateData.language = req.body.language; // No need to parse
     }
 
-    // Handle hobbies update
     if (req.body.hobbies) {
-      updateData.hobbies = JSON.parse(req.body.hobbies);
+      updateData.hobbies = req.body.hobbies; // No need to parse
     }
 
     // Update the candidate's profile
@@ -111,6 +108,8 @@ exports.updateProfile = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
+
+
 
 
 
