@@ -134,12 +134,16 @@ exports.uploadResumeTex = async (req, res) => {
     }
 
     const profile = await Candidate.findById(user.additionalDetails);
-    
+
+    if (!profile) {
+      return res.status(404).json({ success: false, message: 'Profile not found' });
+    }
+
     // Initialize the public_id variable
     let publicId;
 
     // If the user has an existing resume .tex file, get its public_id
-    if (user.resumeTexUrl) {
+    if (profile.personalDetails.resume) {
       const urlParts = profile.personalDetails.resume.split('/');
       publicId = urlParts[urlParts.length - 1].split('.')[0]; // Extract the public_id from the URL
     } else {
@@ -148,7 +152,7 @@ exports.uploadResumeTex = async (req, res) => {
     }
 
     // Upload the .tex file to Cloudinary, overwriting the existing one if it exists
-    const uploadedFile = await cloudinary.uploader.upload(texFile.tempFilePath, {
+    const uploadedTexFile = await cloudinary.uploader.upload(texFile.tempFilePath, {
       folder: `${baseFolder}/${subfolderName}`, // Store inside "Dynamic folder"
       public_id: publicId,
       resource_type: 'raw',
@@ -157,18 +161,22 @@ exports.uploadResumeTex = async (req, res) => {
       overwrite: true, // Ensure the existing file is overwritten
     });
 
-    // Update the resume URL in the candidate's personalDetails
-    profile.personalDetails.resume = `https://latexonline.cc/compile?url=${uploadedFile.secure_url}`;
+    // Generate the PDF URL using LaTeXOnline.cc
+    const pdfUrl = `https://latexonline.cc/compile?url=${uploadedTexFile.secure_url}`;
 
+    // Update the resume URL in the candidate's profile
+    profile.personalDetails.resumeTex = uploadedTexFile.secure_url;
+    profile.personalDetails.resumePdf = pdfUrl;
+    
     // Save the updated profile
     await profile.save();
 
-    // Respond with the Cloudinary link
+    // Respond with the URLs of the .tex file and the generated PDF
     res.status(200).json({ 
       success: true, 
       message: 'Resume uploaded/updated successfully', 
-      urlofTex: uploadedFile.secure_url,
-      urlofPdf: `https://latexonline.cc/compile?url=${uploadedFile.secure_url}`
+      urlofTex: uploadedTexFile.secure_url,
+      urlofPdf: pdfUrl
     });
   } catch (error) {
     console.error('Error uploading .tex file:', error);
