@@ -8,6 +8,7 @@ const {
   signup,
   sendotp,
   auth,
+  getAuthProfile,
 } = require("../controllers/Auth")
 
 // const { auth } = require("../middlewares/auth")
@@ -23,6 +24,9 @@ router.post("/sendotp", sendotp)
 
 // Route for token validation
 router.post('/validateToken', auth);
+
+// Route for token validation and getting profile
+router.get('/getAuthProfile', getAuthProfile);
 
 // Export the router for use in the main application
 module.exports = router
