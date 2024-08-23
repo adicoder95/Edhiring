@@ -117,6 +117,7 @@ exports.updateProfile = async (req, res) => {
 exports.uploadResumeTex = async (req, res) => {
   try {
     const userId = req.user.id;
+    // console.log("user id "+userId)
     const subfolderName = `user_${userId}`;
     const baseFolder = "Dynamic folders"; // Name of the existing folder
 
@@ -136,9 +137,12 @@ exports.uploadResumeTex = async (req, res) => {
     // Initialize the public_id variable
     let publicId;
 
+    const profile = await Candidate.findById(user.additionalDetails);
+    
     // If the user has an existing resume .tex file, get its public_id
+    console.log("user.resumeTexUrl: "+user.resumeTexUrl)
     if (user.resumeTexUrl) {
-      const urlParts = user.resumeTexUrl.split('/');
+      const urlParts = profile.personalDetails.resume.split('/');
       publicId = urlParts[urlParts.length - 1].split('.')[0]; // Extract the public_id from the URL
     } else {
       // If no existing file, create a new public_id
@@ -156,19 +160,23 @@ exports.uploadResumeTex = async (req, res) => {
     });
 
     // Save the updated URL in the user's profile
-    user.resumeTexUrl = uploadedFile.secure_url;
+
+    profile.personalDetails.resume = `https://latexonline.cc/compile?url=`;
+
+    console.log("user ka profile: "+user.additionalDetails.personalDetails);
+    // console.log("user.resume : "+additionalDetails);
+    console.log("user.add : "+profile.personalDetails);
     await user.save();
 
     // Respond with the Cloudinary link
     res.status(200).json({ 
       success: true, 
       message: 'Resume uploaded/updated successfully', 
-      url: uploadedFile.secure_url 
+      urlofTex: uploadedFile.secure_url,
+      urlofPdf: `https://latexonline.cc/compile?url=${uploadedFile.secure_url}`
     });
   } catch (error) {
     console.error('Error uploading .tex file:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
-    
