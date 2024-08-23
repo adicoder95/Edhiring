@@ -35,9 +35,10 @@ exports.updateProfile = async (req, res) => {
     // Handle personalDetails update
     if (req.body.personalDetails) {
       // Merge existing personalDetails with the new data
+      const personalDetails = JSON.parse(req.body.personalDetails);
       updateData.personalDetails = {
         ...user.additionalDetails.personalDetails.toObject(), // Convert to plain object if using Mongoose
-        ...req.body.personalDetails // Update with new details
+        ...personalDetails // Update with new details
       };
 
       // Update profile picture if provided
@@ -110,7 +111,7 @@ exports.updateProfile = async (req, res) => {
 };
 
 
-
+// multipart/form-data; boundary=<calculated when request is sent></calculated>
 
 
 exports.uploadResumeTex = async (req, res) => {
