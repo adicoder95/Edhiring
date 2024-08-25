@@ -50,17 +50,14 @@ exports.updateProfile = async (req, res) => {
 
     // Update personalDetails field
     if (req.body.PersonalDetails) {
-      // Merge existing personalDetails with the new data
-      const PersonalDetails = JSON.parse(req.body.PersonalDetails);
-
-      // Set full name and email from the user's details
-      PersonalDetails.Full_Name = `${user.firstName} ${user.lastName}`;
-      PersonalDetails.Email = user.email;
-      PersonalDetails.Contact_No = user.contact;
+      // Check if PersonalDetails is a string and parse it
+      const PersonalDetails = typeof req.body.PersonalDetails === 'string' 
+        ? JSON.parse(req.body.PersonalDetails) 
+        : req.body.PersonalDetails;
 
       updateData.PersonalDetails = {
-        ...user.additionalDetails.PersonalDetails.toObject(), // Convert to plain object if using Mongoose
-        ...PersonalDetails // Update with new details
+        ...user.additionalDetails.PersonalDetails.toObject(),
+        ...PersonalDetails
       };
 
       // Update profile picture if provided
@@ -88,28 +85,31 @@ exports.updateProfile = async (req, res) => {
 
     // Handle other updates (workExperience, keySkills, etc.)
     if (req.body.WorkExperience) {
-      updateData.WorkExperience = req.body.WorkExperience;
+      updateData.WorkExperience = JSON.parse(req.body.WorkExperience);
     }
 
     if (req.body.KeySkills) {
-      updateData.KeySkills = req.body.KeySkills;
+      updateData.KeySkills = JSON.parse(req.body.KeySkills);
     }
 
     if (req.body.Education) {
-      updateData.Education = req.body.Education;
+      updateData.Education = JSON.parse(req.body.Education);
     }
 
     if (req.body.Certification) {
-      updateData.Certification = req.body.Certification;
+      updateData.Certification = JSON.parse(req.body.Certification);
     }
 
     if (req.body.Language) {
-      updateData.Language = req.body.Language;
+      updateData.Language = JSON.parse(req.body.Language);
     }
 
     if (req.body.Hobbies) {
-      updateData.Hobbies = req.body.Hobbies;
+      updateData.Hobbies = JSON.parse(req.body.Hobbies);
     }
+
+    // Log the updateData for debugging
+    console.log('Update Data:', updateData);
 
     // Update the candidate's profile with the new data
     const updatedProfile = await Candidate.findByIdAndUpdate(
@@ -128,7 +128,7 @@ exports.updateProfile = async (req, res) => {
     // Respond with the updated profile
     res.status(200).json({ success: true, candidate: updatedProfile });
   } catch (error) {
-    console.error(error);
+    console.error('Error updating profile:', error);
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
