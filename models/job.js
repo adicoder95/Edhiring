@@ -19,7 +19,7 @@ const jobSchema = new mongoose.Schema({
         required: [true, 'Description is required'],
     },
     salary: {
-        type: Number,
+        type: String,
         trim: true,
         required: [true, 'Salary is required'],
     },
