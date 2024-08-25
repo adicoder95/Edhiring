@@ -138,3 +138,45 @@ exports.getInstituteInfo = async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
+
+exports.getCandidateProfileById = async (req, res) => {
+    try {
+      // Extract candidate ID from request parameters
+      const candidateId = req.params.id;
+  
+      // Log the candidate ID for debugging
+      console.log('Fetching candidate with ID:', candidateId);
+  
+      // Find the candidate by ID
+      const candidate = await Candidate.findById(candidateId);
+  
+      // Log the candidate object for debugging
+      console.log('Candidate found:', candidate);
+  
+      // Check if the candidate exists
+      if (!candidate) {
+        return res.status(404).json({ success: false, message: 'Candidate profile not found' });
+      }
+  
+      // Prepare the response object with all relevant information
+      const response = {
+        success: true,
+        candidate: {
+          PersonalDetails: candidate.PersonalDetails,
+          WorkExperience: candidate.WorkExperience,
+          KeySkills: candidate.KeySkills,
+          Education: candidate.Education,
+          Certification: candidate.Certification,
+          Language: candidate.Language,
+          Hobbies: candidate.Hobbies,
+        },
+      };
+  
+      // Respond with the candidate's complete profile
+      res.status(200).json(response);
+  
+    } catch (error) {
+      console.error('Error fetching candidate profile:', error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
