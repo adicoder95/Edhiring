@@ -1,93 +1,61 @@
 
 const mongoose = require("mongoose");
-
 const profileSchema = new mongoose.Schema({
-	// profilePic: {
-	//   type: String,
-	//   required: true,
-	//   default: 'default-profile-pic-url',
-	// },
-	// gender: {
-	//   type: String,
-	//   required: true,
-	//   default: 'Not specified',
-	// },
-	// contactNumber: {
-	//   type: Number,
-	//   required: true,
-	//   trim: true,
-	//   default: '0000000000',
-	// },
-	// currentCity: {
-	//   type: String,
-	//   required: true,
-	//   default: 'Unknown',
-	// },
-	// dateOfBirth: {
-	//   type: Date,
-	//   required: true,
-	//   default: new Date('2000-01-01'),
-	// },
-	// about: {
-	//   type: String,
-	//   required: true,
-	//   trim: true,
-	//   default: 'No details provided',
-	// },
-	personalDetails: {
+	
+	PersonalDetails : {
 	  type: {
-		profilePic: String,
-		full_Name: String,
-		gender: {
+		Profile_Pic: String,
+		Full_Name: String,
+		Gender: {
 		  type: String,
 		  enum: ['Male', 'Female', 'Other'],
 		},
-		email: String,
-		contact_No: String,
-		current_City: String,
-		experience: {
+		Email: String,
+		Contact_No: String,
+		Current_City: String,
+		Experience: {
 		  type: String,
 		  enum: ['Fresher', 'Experienced'],
 		},
-		experience_time: {
+		Experience_time: {
 			years:{type:Number,default:0},
 			months:{type:Number,default:0},
 		},
-		resumeTex: String, 
-		resumePdf: String, 
-		job_Role: String,
+		ResumeTex: String, 
+		ResumePdf: String, 
+		Job_Role: String,
 	  },
 	  required: true,
 	  default: {
-		profilePic: 'default-profile-pic-url',
-		full_Name: '',
-		gender: 'Not specified',
-		email: '',
-		contact_No: '0000000000',
-		current_City: 'Unknown',
-		experience: 'Fresher',
-		resumeTex: '',
-		resumePdf: '',
-		job_Role: '',
+		Profile_Pic: 'default-profile-pic-url',
+		Full_Name: '',
+		Gender: 'Not specified',
+		Email: '',
+		Contact_No: '0000000000',
+		Current_City: 'Unknown',
+		Experience: 'Fresher',
+		ResumeTex: '',
+		ResumePdf: '',
+		Job_Role: '',
 	  },
 	},
-	workExperience: {
+	WorkExperience : {
 	  type: [
 		{
-		  company: String,
-		  designation: String,
-		  working: {
+		  Company: String,
+		  Designation: String,
+		  Working: {
 			type: String,
 			enum: ['yes','no'],
 		  },
-		  worked_Since: Date,
-		  worked_till: Date,
-		  description: String,
+		  Worked_Since: Date,
+		  Worked_till: Date,
+		  Description: String,
 		},
 	  ],
 	  default: [],
 	},
-	keySkills: {
+	KeySkills: {
 	  type: {
 		tags: [String],
 	  },
@@ -96,32 +64,32 @@ const profileSchema = new mongoose.Schema({
 		tags: [],
 	  },
 	},
-	education: {
+	Education: {
 	  type: [
 		{
-		  degree: String,
-		  institute_Name: String,
-		  year_of_Starting: Date,
-		  year_of_Passing: Date,
+		  Degree: String,
+		  Institute_Name: String,
+		  Year_of_Starting: Date,
+		  Year_of_Passing: Date,
 		},
 	  ],
 	  default: [],
 	},
-	certification: {
+	Certification: {
 	  type: [
 		{
-		  certificate_Name: String,
-		  from_Date: Date,
-		  to_Date: Date,
+		  Certificate_Name: String,
+		  From_Date: Date,
+		  To_Date: Date,
 		},
 	  ],
 	  default: [],
 	},
-	language: {
+	Language: {
 	  type: [
 		{
-		  language: String,
-		  proficiency: {
+		  Language: String,
+		  Proficiency: {
 			type: String,
 			enum: ['Beginner', 'Intermediate', 'Expert', 'Native', 'Fluent'],
 		  },
@@ -129,13 +97,13 @@ const profileSchema = new mongoose.Schema({
 	  ],
 	  default: [],
 	},
-	hobbies: {
+	Hobbies: {
 	  type: {
-		hobbies: [String],
+		Hobbies: [String],
 	  },
 	  required: true,
 	  default: {
-		hobbies: [],
+		Hobbies: [],
 	  },
 	},
   });
