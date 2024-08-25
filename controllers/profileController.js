@@ -7,11 +7,23 @@ const fs = require('fs');
 
 exports.getProfile = async (req, res) => {
   try {
+    // Find the user and populate the additionalDetails field
     const user = await User.findById(req.user.id).populate('additionalDetails');
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+    if (!user || !user.additionalDetails) {
+      return res.status(404).json({ success: false, message: 'User profile not found' });
     }
-    
+
+    // Ensure personalDetails is defined in additionalDetails
+    if (!user.additionalDetails.PersonalDetails) {
+      user.additionalDetails.PersonalDetails = {};
+    }
+
+    // Set full name and email in personalDetails
+    user.additionalDetails.PersonalDetails.Full_Name = `${user.firstName} ${user.lastName}`;
+    user.additionalDetails.PersonalDetails.Email = user.email;
+    user.additionalDetails.PersonalDetails.Contact_No = user.contact;
+
+    // Respond with the candidate's profile
     res.status(200).json({ success: true, candidate: user.additionalDetails });
 
   } catch (error) {
@@ -20,8 +32,12 @@ exports.getProfile = async (req, res) => {
   }
 };
 
+
+
+
 exports.updateProfile = async (req, res) => {
   try {
+    // Fetch the user and populate the additionalDetails field
     const user = await User.findById(req.user.id).populate('additionalDetails');
 
     // Ensure user and additionalDetails exist
@@ -32,64 +48,70 @@ exports.updateProfile = async (req, res) => {
     const profileId = user.additionalDetails._id;
     const updateData = {};
 
-    // Handle personalDetails update
-    if (req.body.personalDetails) {
+    // Update personalDetails field
+    if (req.body.PersonalDetails) {
       // Merge existing personalDetails with the new data
-      const personalDetails = JSON.parse(req.body.personalDetails);
-      updateData.personalDetails = {
-        ...user.additionalDetails.personalDetails.toObject(), // Convert to plain object if using Mongoose
-        ...personalDetails // Update with new details
+      const PersonalDetails = JSON.parse(req.body.PersonalDetails);
+
+      // Set full name and email from the user's details
+      PersonalDetails.Full_Name = `${user.firstName} ${user.lastName}`;
+      PersonalDetails.Email = user.email;
+      PersonalDetails.Contact_No = user.contact;
+
+      updateData.PersonalDetails = {
+        ...user.additionalDetails.PersonalDetails.toObject(), // Convert to plain object if using Mongoose
+        ...PersonalDetails // Update with new details
       };
 
       // Update profile picture if provided
-      if (req.files && req.files.profilePic) {
-        const profilePic = req.files.profilePic;
+      if (req.files && req.files.Profile_Pic) {
+        const Profile_Pic = req.files.Profile_Pic;
         const image = await uploadImageToCloudinary(
-          profilePic,
+          Profile_Pic,
           process.env.FOLDER_NAME,
           1000,
           1000
         );
-        updateData.personalDetails.profilePic = image.secure_url;
+        updateData.PersonalDetails.Profile_Pic = image.secure_url;
       }
 
       // Update resume if provided
-      if (req.files && req.files.resume) {
-        const resume = req.files.resume;
+      if (req.files && req.files.ResumePdf) {
+        const ResumePdf = req.files.ResumePdf;
         const uploadedFile = await uploadFileToCloudinary(
-          resume,
+          ResumePdf,
           process.env.FOLDER_NAME
         );
-        updateData.personalDetails.resume = uploadedFile.secure_url;
+        updateData.PersonalDetails.ResumePdf = uploadedFile.secure_url;
       }
     }
 
-    // Handle other updates (workExperience, keySkills, etc.) similarly
-    if (req.body.workExperience) {
-      updateData.workExperience = req.body.workExperience; // No need to parse
+    // Handle other updates (workExperience, keySkills, etc.)
+    if (req.body.WorkExperience) {
+      updateData.WorkExperience = req.body.WorkExperience;
     }
 
-    if (req.body.keySkills) {
-      updateData.keySkills = req.body.keySkills; // No need to parse
+    if (req.body.KeySkills) {
+      updateData.KeySkills = req.body.KeySkills;
     }
 
-    if (req.body.education) {
-      updateData.education = req.body.education; // No need to parse
+    if (req.body.Education) {
+      updateData.Education = req.body.Education;
     }
 
-    if (req.body.certification) {
-      updateData.certification = req.body.certification; // No need to parse
+    if (req.body.Certification) {
+      updateData.Certification = req.body.Certification;
     }
 
-    if (req.body.language) {
-      updateData.language = req.body.language; // No need to parse
+    if (req.body.Language) {
+      updateData.Language = req.body.Language;
     }
 
-    if (req.body.hobbies) {
-      updateData.hobbies = req.body.hobbies; // No need to parse
+    if (req.body.Hobbies) {
+      updateData.Hobbies = req.body.Hobbies;
     }
 
-    // Update the candidate's profile
+    // Update the candidate's profile with the new data
     const updatedProfile = await Candidate.findByIdAndUpdate(
       profileId,
       { $set: updateData },
@@ -100,9 +122,10 @@ exports.updateProfile = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Profile update failed' });
     }
 
-    // Record activity
+    // Record activity for audit trail or logs
     await recordActivity(req.user.id, 'Profile', 'Updated Profile Information');
 
+    // Respond with the updated profile
     res.status(200).json({ success: true, candidate: updatedProfile });
   } catch (error) {
     console.error(error);
@@ -110,8 +133,6 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
-
-// multipart/form-data; boundary=<calculated when request is sent></calculated>
 
 
 exports.uploadResumeTex = async (req, res) => {
@@ -143,8 +164,8 @@ exports.uploadResumeTex = async (req, res) => {
     let publicId;
 
     // If the user has an existing resume .tex file, get its public_id
-    if (profile.personalDetails.resume) {
-      const urlParts = profile.personalDetails.resume.split('/');
+    if (profile.PersonalDetails.ResumeTex) {
+      const urlParts = profile.PersonalDetails.ResumeTex.split('/');
       publicId = urlParts[urlParts.length - 1].split('.')[0]; // Extract the public_id from the URL
     } else {
       // If no existing file, create a new public_id
@@ -165,8 +186,8 @@ exports.uploadResumeTex = async (req, res) => {
     const pdfUrl = `https://latexonline.cc/compile?url=${uploadedTexFile.secure_url}`;
 
     // Update the resume URL in the candidate's profile
-    profile.personalDetails.resumeTex = uploadedTexFile.secure_url;
-    profile.personalDetails.resumePdf = pdfUrl;
+    profile.PersonalDetails.ResumeTex = uploadedTexFile.secure_url;
+    profile.PersonalDetails.ResumePdf = pdfUrl;
     
     // Save the updated profile
     await profile.save();
@@ -180,6 +201,30 @@ exports.uploadResumeTex = async (req, res) => {
     });
   } catch (error) {
     console.error('Error uploading .tex file:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
+exports.getUserTex = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    const profile = await Candidate.findById(user.additionalDetails);
+
+    if (!profile) {
+      return res.status(404).json({ success: false, message: 'Profile not found' });
+    }
+
+    
+    res.status(200).json({ success: true, Resume: profile.personalDetails.resumeTex});
+
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
