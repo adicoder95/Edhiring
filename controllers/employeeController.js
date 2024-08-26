@@ -6,7 +6,7 @@ const { uploadImageToCloudinary } = require("../utils/cloudinary");
 const cloudinary = require("../config/cloudinaryConfig");
 const fs = require('fs');
 const mongoose = require("mongoose");
-const Profile = require('../models/Profile'); 
+const Candidate = require('../models/Profile'); 
 
 
 
@@ -142,13 +142,14 @@ exports.getInstituteInfo = async (req, res) => {
 exports.getCandidateProfileById = async (req, res) => {
     try {
       // Extract candidate ID from request parameters
-      const candidateId = req.params.id;
+      const candidateId = req.body.id;
   
       // Log the candidate ID for debugging
       console.log('Fetching candidate with ID:', candidateId);
   
       // Find the candidate by ID
-      const candidate = await Candidate.findById(candidateId);
+      const user = await User.findById(candidateId);
+      const candidate = await Candidate.findById(user.additionalDetails);
   
       // Log the candidate object for debugging
       console.log('Candidate found:', candidate);
@@ -161,6 +162,7 @@ exports.getCandidateProfileById = async (req, res) => {
       // Prepare the response object with all relevant information
       const response = {
         success: true,
+
         candidate: {
           PersonalDetails: candidate.PersonalDetails,
           WorkExperience: candidate.WorkExperience,
