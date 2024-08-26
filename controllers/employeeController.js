@@ -43,29 +43,22 @@ exports.updateEmployerProfile = async (req, res) => {
 
 
       const employerProfileId = user.additionalDetails;
-      let logoPic, image1;
-      let coverPic, image2;
-
-      if (req.files && req.files.logoPic) {
-        logoPic = req.files.logoPic;
-        image1 = await uploadImageToCloudinary(
-            logoPic,
-            process.env.FOLDER_NAME,
-            1000,
-            1000
-        )
-      }
-      if (req.files && req.files.coverPhoto) {
-        coverPhoto = req.files.coverPhoto;
-        image2 = await uploadImageToCloudinary(
-            coverPhoto,
-            process.env.FOLDER_NAME,
-            1000,
-            1000
-          )
-      }
+      let logoPic = req.files.logo;
+      let coverPic = req.files.coverPhoto;
       let { email, contact, instituteType, instituteName, institueContact, instituteEmail, website, foundingDate, socialNetwork, about, currentCity, pincode, address1, address2, address3, fullName, rating, moreReviews } = req.body;
 
+      const image1 = await uploadImageToCloudinary(
+        logoPic,
+        process.env.FOLDER_NAME,
+        1000,
+        1000
+      )
+      const image2 = await uploadImageToCloudinary(
+        coverPic,
+        process.env.FOLDER_NAME,
+        1000,
+        1000
+      )
 
       // Create an update object
       const updateData = {
@@ -89,23 +82,17 @@ exports.updateEmployerProfile = async (req, res) => {
           moreReviews,
       };
 
-      let updatedProfile1, updatedProfile2;
+      const updatedProfile1 = await Employer.findByIdAndUpdate(
+        user.additionalDetails._id,
+        { logo : image1.secure_url },
+        { new: true }
+      );
 
-      if (req.files && req.files.logoPic){
-            updatedProfile1 = await Employer.findByIdAndUpdate(
-            user.additionalDetails._id,
-            { logo : image1.secure_url },
-            { new: true }
-        );
-      }
-
-      if (req.files && req.files.coverPhoto){
-            updatedProfile2 = await Employer.findByIdAndUpdate(
-            user.additionalDetails._id,
-            { coverPhoto : image2.secure_url },
-            { new: true }
-        );
-      }
+      const updatedProfile2 = await Employer.findByIdAndUpdate(
+        user.additionalDetails._id,
+        { coverPhoto : image2.secure_url },
+        { new: true }
+      );
 
       // Remove undefined fields from the update object
       Object.keys(updateData).forEach(key => {
@@ -178,6 +165,7 @@ exports.getCandidateProfileById = async (req, res) => {
       // Prepare the response object with all relevant information
       const response = {
         success: true,
+
         candidate,
       };
   
@@ -188,4 +176,47 @@ exports.getCandidateProfileById = async (req, res) => {
       console.error('Error fetching candidate profile:', error);
       res.status(500).json({ success: false, message: 'Server error' });
     }
+};
+
+exports.getCandidateProfileByIdExtracted = async (req, res) => {
+  try {
+      // Extract candidate ID from request parameters
+      const candidateId = req.body.id;
+
+      // Log the candidate ID for debugging
+      console.log('Fetching candidate with ID:', candidateId);
+
+      // Find the user by ID
+      const user = await User.findById(candidateId);
+      if (!user) {
+          return res.status(404).json({ success: false, message: 'Candidate profile not found' });
+      }
+      const candidate = await Candidate.findById(user.additionalDetails);
+
+      // Log the candidate object for debugging
+      console.log('Candidate found:', candidate);
+
+      // Check if the candidate exists
+      if (!candidate) {
+          return res.status(404).json({ success: false, message: 'Candidate profile not found' });
+      }
+
+      // Prepare the response object with the required information
+      const response = {
+          success: true,
+          candidate: {
+              _id: candidate.PersonalDetails._id,
+              Full_Name: candidate.PersonalDetails.Full_Name,
+              Job_Role: candidate.PersonalDetails.Job_Role,
+              Profile_Pic: candidate.PersonalDetails.Profile_Pic,
+          },
+      };
+
+      // Respond with the candidate's selected profile information
+      res.status(200).json(response);
+
+  } catch (error) {
+      console.error('Error fetching candidate profile:', error);
+      res.status(500).json({ success: false, message: 'Server error' });
+  }
 };
