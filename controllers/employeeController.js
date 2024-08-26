@@ -43,22 +43,29 @@ exports.updateEmployerProfile = async (req, res) => {
 
 
       const employerProfileId = user.additionalDetails;
-      let logoPic = req.files.logo;
-      let coverPic = req.files.coverPhoto;
+      let logoPic, image1;
+      let coverPic, image2;
+
+      if (req.files && req.files.logoPic) {
+        logoPic = req.files.logoPic;
+        image1 = await uploadImageToCloudinary(
+            logoPic,
+            process.env.FOLDER_NAME,
+            1000,
+            1000
+        )
+      }
+      if (req.files && req.files.coverPhoto) {
+        coverPhoto = req.files.coverPhoto;
+        image2 = await uploadImageToCloudinary(
+            coverPhoto,
+            process.env.FOLDER_NAME,
+            1000,
+            1000
+          )
+      }
       let { email, contact, instituteType, instituteName, institueContact, instituteEmail, website, foundingDate, socialNetwork, about, currentCity, pincode, address1, address2, address3, fullName, rating, moreReviews } = req.body;
 
-      const image1 = await uploadImageToCloudinary(
-        logoPic,
-        process.env.FOLDER_NAME,
-        1000,
-        1000
-      )
-      const image2 = await uploadImageToCloudinary(
-        coverPic,
-        process.env.FOLDER_NAME,
-        1000,
-        1000
-      )
 
       // Create an update object
       const updateData = {
@@ -82,17 +89,23 @@ exports.updateEmployerProfile = async (req, res) => {
           moreReviews,
       };
 
-      const updatedProfile1 = await Employer.findByIdAndUpdate(
-        user.additionalDetails._id,
-        { logo : image1.secure_url },
-        { new: true }
-      );
+      let updatedProfile1, updatedProfile2;
 
-      const updatedProfile2 = await Employer.findByIdAndUpdate(
-        user.additionalDetails._id,
-        { coverPhoto : image2.secure_url },
-        { new: true }
-      );
+      if (req.files && req.files.logoPic){
+            updatedProfile1 = await Employer.findByIdAndUpdate(
+            user.additionalDetails._id,
+            { logo : image1.secure_url },
+            { new: true }
+        );
+      }
+
+      if (req.files && req.files.coverPhoto){
+            updatedProfile2 = await Employer.findByIdAndUpdate(
+            user.additionalDetails._id,
+            { coverPhoto : image2.secure_url },
+            { new: true }
+        );
+      }
 
       // Remove undefined fields from the update object
       Object.keys(updateData).forEach(key => {
@@ -165,7 +178,6 @@ exports.getCandidateProfileById = async (req, res) => {
       // Prepare the response object with all relevant information
       const response = {
         success: true,
-
         candidate,
       };
   
