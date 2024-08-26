@@ -12,7 +12,7 @@ router.put('/profile/update', auth, isEmployer, updateEmployerProfile);
 
 router.get('/profile/update/inst',auth, isEmployer, getInstituteInfo);
 
-router.post('/profile/candidate',auth, isEmployer, getCandidateProfileById);
+router.post('/profile/candidate', getCandidateProfileById);
 
 
 module.exports = router;
