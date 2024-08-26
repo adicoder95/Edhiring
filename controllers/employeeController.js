@@ -149,6 +149,9 @@ exports.getCandidateProfileById = async (req, res) => {
   
       // Find the candidate by ID
       const user = await User.findById(candidateId);
+      if (!user) {
+        return res.status(404).json({ success: false, message: 'Candidate profile not found' });
+      }
       const candidate = await Candidate.findById(user.additionalDetails);
   
       // Log the candidate object for debugging
@@ -163,15 +166,7 @@ exports.getCandidateProfileById = async (req, res) => {
       const response = {
         success: true,
 
-        candidate: {
-          PersonalDetails: candidate.PersonalDetails,
-          WorkExperience: candidate.WorkExperience,
-          KeySkills: candidate.KeySkills,
-          Education: candidate.Education,
-          Certification: candidate.Certification,
-          Language: candidate.Language,
-          Hobbies: candidate.Hobbies,
-        },
+        candidate,
       };
   
       // Respond with the candidate's complete profile
