@@ -12,7 +12,7 @@ const io = new Server(server);
 const cloudinary = require('cloudinary').v2;
 const bodyParser = require('body-parser');
 const cookieParser = require("cookie-parser");
-// const cors = require("cors");
+const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
 
@@ -29,8 +29,14 @@ const activityRoute = require('./routes/activityRoutes');
 
 const database = require("./config/database");
 
+
 dotenv.config();
 const port = process.env.PORT || 3000;
+
+const corsOptions = {
+  // origin: 'http://localhost:5173', // Frontend's URL
+  optionsSuccessStatus: 200,
+};
 
 // Database connect
 database.connect();
@@ -40,14 +46,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-// app.use(cors({
-//     // origin: "http://localhost:10000", // Frontend
-//     credentials: true,
-// }));
+
 app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp",
 }));
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Allow preflight requests from all origins
 
 // Return "https" URLs by setting secure: true
 cloudinary.config({
