@@ -3,9 +3,15 @@ const express = require("express")
 const router = express.Router()
 
 // Import the required controllers and middleware functions
-const { login, signup, sendotp, auth, getAuthProfile, getCandidateProfile} = require("../controllers/Auth");
-const { isAuthenticated, isEmployer } = require('../middlewares/auth');
-
+const {
+  login,
+  signup,
+  sendotp,
+  auth,
+  getAuthProfile,
+  forgotPassword,
+  resetPassword,
+} = require("../controllers/Auth")
 
 // const { auth } = require("../middlewares/auth")
 
@@ -24,6 +30,8 @@ router.post('/validateToken', auth);
 // Route for token validation and getting profile
 router.get('/getAuthProfile', getAuthProfile);
 
+router.post("/forgotPassword", forgotPassword)
+router.post("/resetPassword", resetPassword)
 
 // Export the router for use in the main application
 module.exports = router
