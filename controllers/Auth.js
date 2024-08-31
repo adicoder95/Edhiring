@@ -4,8 +4,8 @@ const OTP = require("../models/OTP")
 const jwt = require("jsonwebtoken")
 const otpGenerator = require("otp-generator")
 const mailSender = require("../utils/mailSender")
-const Profile = require("../models/Profile")
-const employerProfile = require("../models/employerProfile")
+const Candidate = require("../models/Profile")
+const employer = require("../models/employerProfile")
 require("dotenv").config()
 
 // Signup Controller for Registering USers
@@ -18,6 +18,7 @@ exports.signup = async (req, res) => {
       lastName,
       email,
       password,
+      contact,
       accountType,
       otp,
     } = req.body
@@ -27,6 +28,7 @@ exports.signup = async (req, res) => {
       !lastName ||
       !email ||
       !password ||
+      !contact ||
       !accountType ||
       !otp
     ) {
@@ -63,19 +65,19 @@ exports.signup = async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10)
-    console.log("hs "+hashedPassword);
+    console.log("hs ");
 
     // Create the Additional Profile For User
     let additionalDetails;
     if (accountType === 'Candidate') {
-      additionalDetails = await Profile.create({
+      additionalDetails = await Candidate.create({
         gender: 'Not specified',
         dateOfBirth: new Date('2000-01-01'),
         about: 'No details provided',
       });
-    } else if (accountType === 'Employer' || accountType === 'Admin') {
+    } else if (accountType === 'Employer') {
       console.log('generating Employer');
-      additionalDetails = await employerProfile.create({
+      additionalDetails = await employer.create({
         logo: 'logo.png',
         coverPhoto: 'coverpic.png',
         email,
@@ -96,19 +98,32 @@ exports.signup = async (req, res) => {
         // Add other default fields as needed
       });
     }
-    console.log('employee created');
+    console.log('employer created');
 
-
-    const user = await User.create({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      accountType,
-      additionalDetails: additionalDetails._id,
-      image: "",
-    })
-
+    let user;
+    if(accountType=='Admin'){
+        user = await User.create({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        contact,
+        accountType,
+        additionalDetails: '',
+        image: "",
+      })
+    } else{
+        user = await User.create({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        contact,
+        accountType,
+        additionalDetails: additionalDetails._id,
+        image: "",
+      })
+    }
     return res.status(200).json({
       success: true,
       user,
@@ -139,7 +154,8 @@ exports.login = async (req, res) => {
     }
 
     // Find user with provided email
-    const user = await User.findOne({ email }).populate("additionalDetails");
+    const user = await User.findOne({ email })
+    // .populate("additionalDetails");
 
     // If user not found with provided email
     if (!user) {
@@ -159,7 +175,7 @@ exports.login = async (req, res) => {
           expiresIn: "24h",
         }
       )
-
+      
       // Save token to user document in database
       user.token = token
       user.password = undefined
@@ -168,10 +184,14 @@ exports.login = async (req, res) => {
         expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         httpOnly: true,
       }
+      const additionalDetails=user.additionalDetails
+      const Profile = await Candidate.findById(additionalDetails);
+      // console.log("candidate testing: " + candidate)
       res.cookie("token", token, options).status(200).json({
         success: true,
         token,
         user,
+        Profile,
         message: `User Login Success`,
       })
     } else {
@@ -236,3 +256,199 @@ exports.sendotp = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message })
   }
 }
+
+
+// const jwt = require('jsonwebtoken'); // Ensure you have this import at the top
+
+exports.auth = async (req, res) => {
+  // Extracting JWT from request cookies, body, or header
+  const token =
+    req.cookies.token ||
+    req.body.token ||
+    req.header('Authorization')?.replace('Bearer ', '');
+
+  // If JWT is missing, return 401 Unauthorized response
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Token Missing' });
+  }
+
+  try {
+    // Verifying the JWT using the secret key stored in environment variables
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Storing the decoded JWT payload in the request object for further use
+    req.user = decode;
+
+    // Return success response if token is valid
+    return res.status(200).json({ success: true, message: 'Token is valid', user: req.user, accountType: req.user.accountType });
+  } catch (error) {
+    // If JWT verification fails, return 401 Unauthorized response
+    console.error('JWT Verification Error:', error);
+    return res.status(401).json({ success: false, message: 'Token is invalid or expired' });
+  }
+};
+
+
+
+exports.getAuthProfile = async (req, res) => {
+  // Extracting JWT from request cookies, body, or header
+  const token =
+    req.cookies.token ||
+    req.body.token ||
+    req.header('Authorization')?.replace('Bearer ', '');
+
+  // If JWT is missing, return 401 Unauthorized response
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Token Missing' });
+  }
+
+  try {
+    // Verifying the JWT using the secret key stored in environment variables
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Storing the decoded JWT payload in the request object for further use
+    req.user = decode;
+
+    // Fetch the user and populate additionalDetails
+    const user = await User.findById(req.user.id).populate('additionalDetails');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Return the user's profile
+    res.status(200).json({ success: true, candidate: user.additionalDetails });
+
+  } catch (error) {
+    // If JWT verification fails or any other error occurs, return 401 Unauthorized response
+    console.error('JWT Verification Error:', error);
+    return res.status(401).json({ success: false, message: 'Token is invalid or expired' });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("Received request to send OTP for email:", email);
+
+    // Check if email is provided
+    if (!email) {
+      console.log("Email is required but not provided.");
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log("User not found for email:", email);
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    console.log("User found:", user);
+
+    // Generate an OTP
+    const otp = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+    });
+    console.log("Generated OTP:", otp);
+
+    // Save the OTP to the OTP collection (Ensure your OTP model is imported)
+    const otpEntry = new OTP({ email, otp }); // Create a new OTP entry
+    await otpEntry.save(); // Save the OTP entry to the database
+    console.log("OTP saved to database:", otpEntry);
+
+    // Prepare the email parameters
+    const title = "Password Reset Request";
+    const body = `Your password reset OTP is ${otp}`;
+
+    // Send the email using the mailSender function
+    await mailSender(email, title, body);
+    console.log("Password reset OTP sent to email:", email);
+
+    return res.status(200).json({
+      success: true,
+      message: "Password reset OTP sent successfully",
+    });
+  } catch (error) {
+    console.error("Error in forgotPassword:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while processing your request.",
+    });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    console.log("Received request to reset password for email:", email);
+
+    // Check if all fields are provided
+    if (!email || !otp || !newPassword) {
+      console.log("Missing fields in request:", { email, otp, newPassword });
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Find the user
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log("User not found for email:", email);
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    console.log("User found:", user);
+
+    // Check the latest OTP for the user
+    const response = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
+    console.log("Latest OTP response:", response);
+
+    if (response.length === 0) {
+      // OTP not found for the email
+      return res.status(400).json({
+        success: false,
+        message: "The OTP is not valid",
+      });
+    } else if (otp !== response[0].otp) {
+      // Invalid OTP
+      return res.status(400).json({
+        success: false,
+        message: "The OTP is not valid",
+      });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    console.log("Hashed new password for email:", email);
+
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save(); // Save the updated user object
+    console.log("Password updated successfully for email:", email);
+
+    // Optionally delete the OTP after successful reset
+    await OTP.deleteMany({ email }); // Clear OTPs for this email
+    console.log("Deleted OTPs for email:", email);
+
+    return res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.error("Error in resetPassword:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while resetting the password.",
+    });
+  }
+};
