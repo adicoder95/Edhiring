@@ -4,7 +4,6 @@ const OTP = require("../models/OTP")
 const jwt = require("jsonwebtoken")
 const otpGenerator = require("otp-generator")
 const mailSender = require("../utils/mailSender")
-const sendSMS = require("../utils/smsSender")
 const Candidate = require("../models/Profile")
 const employer = require("../models/employerProfile")
 require("dotenv").config()
@@ -186,19 +185,7 @@ exports.login = async (req, res) => {
         httpOnly: true,
       }
       const additionalDetails=user.additionalDetails
-      let Profile;
-      if(user.accountType=='Candidate'){  
-        Profile = await Candidate.findById(additionalDetails);
-        Profile.PersonalDetails.Full_Name = `${user.firstName} ${user.lastName}`;
-        Profile.PersonalDetails.Email = user.email;
-        Profile.PersonalDetails.Contact_No = user.contact;
-      } else if(user.accountType=='Employer'){
-        Profile = await employer.findById(additionalDetails);
-        Profile.fullName = `${user.firstName} ${user.lastName}`;
-        Profile.email = user.email;
-        Profile.contact = user.contact;
-      }
-
+      const Profile = await Candidate.findById(additionalDetails);
       // console.log("candidate testing: " + candidate)
       res.cookie("token", token, options).status(200).json({
         success: true,
@@ -271,9 +258,7 @@ exports.sendotp = async (req, res) => {
 }
 
 
-
-
-
+// const jwt = require('jsonwebtoken'); // Ensure you have this import at the top
 
 exports.auth = async (req, res) => {
   // Extracting JWT from request cookies, body, or header
@@ -331,7 +316,7 @@ exports.getAuthProfile = async (req, res) => {
     }
 
     // Return the user's profile
-    res.status(200).json({ success: true, role:user.accountType, profile: user.additionalDetails });
+    res.status(200).json({ success: true, candidate: user.additionalDetails });
 
   } catch (error) {
     // If JWT verification fails or any other error occurs, return 401 Unauthorized response
@@ -340,4 +325,130 @@ exports.getAuthProfile = async (req, res) => {
   }
 };
 
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("Received request to send OTP for email:", email);
 
+    // Check if email is provided
+    if (!email) {
+      console.log("Email is required but not provided.");
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log("User not found for email:", email);
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    console.log("User found:", user);
+
+    // Generate an OTP
+    const otp = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      lowerCaseAlphabets: false,
+      specialChars: false,
+    });
+    console.log("Generated OTP:", otp);
+
+    // Save the OTP to the OTP collection (Ensure your OTP model is imported)
+    const otpEntry = new OTP({ email, otp }); // Create a new OTP entry
+    await otpEntry.save(); // Save the OTP entry to the database
+    console.log("OTP saved to database:", otpEntry);
+
+    // Prepare the email parameters
+    const title = "Password Reset Request";
+    const body = `Your password reset OTP is ${otp}`;
+
+    // Send the email using the mailSender function
+    await mailSender(email, title, body);
+    console.log("Password reset OTP sent to email:", email);
+
+    return res.status(200).json({
+      success: true,
+      message: "Password reset OTP sent successfully",
+    });
+  } catch (error) {
+    console.error("Error in forgotPassword:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while processing your request.",
+    });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    console.log("Received request to reset password for email:", email);
+
+    // Check if all fields are provided
+    if (!email || !otp || !newPassword) {
+      console.log("Missing fields in request:", { email, otp, newPassword });
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Find the user
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log("User not found for email:", email);
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    console.log("User found:", user);
+
+    // Check the latest OTP for the user
+    const response = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
+    console.log("Latest OTP response:", response);
+
+    if (response.length === 0) {
+      // OTP not found for the email
+      return res.status(400).json({
+        success: false,
+        message: "The OTP is not valid",
+      });
+    } else if (otp !== response[0].otp) {
+      // Invalid OTP
+      return res.status(400).json({
+        success: false,
+        message: "The OTP is not valid",
+      });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    console.log("Hashed new password for email:", email);
+
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save(); // Save the updated user object
+    console.log("Password updated successfully for email:", email);
+
+    // Optionally delete the OTP after successful reset
+    await OTP.deleteMany({ email }); // Clear OTPs for this email
+    console.log("Deleted OTPs for email:", email);
+
+    return res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.error("Error in resetPassword:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while resetting the password.",
+    });
+  }
+};
